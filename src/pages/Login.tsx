@@ -10,6 +10,7 @@ import {
     Button 
 } from 'react-bootstrap';
 import "react-toastify/dist/ReactToastify.css";
+import './styles/login.css';
 
 export const Login = () => {
     
@@ -32,7 +33,7 @@ export const Login = () => {
     };        
 
     return (
-        <div style={{backgroundColor: '#3931d4'}}> 
+        <div className='fondo'> 
             <form onSubmit={handleLogin}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center h-100'>
