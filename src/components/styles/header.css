@@ -1,0 +1,12 @@
+.navBar-title {
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-left: 2rem;
+}
+
+.navBar-company {
+    text-transform: uppercase;
+    font-weight: bold;
+    margin-left: 10rem;
+    font-size: xx-large;
+}

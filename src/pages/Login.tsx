@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { 
     Container,
@@ -17,6 +18,8 @@ export const Login = () => {
     const [username, setUsername] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
+    const navigate = useNavigate();
+
     const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
@@ -25,7 +28,8 @@ export const Login = () => {
             password: password
         })
         .then(response => {
-            toast.success(`${response.data.message}`);
+            navigate('/home');
+            localStorage.setItem('accesToken', response.data.accessToken);
         })
         .catch(error => {
             toast.error(`${error.response.data.message}`);
