@@ -1,5 +1,7 @@
 import { Navbar, Nav } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { FaUser } from 'react-icons/fa';
+import { Logout } from '../components/Logout';
 import './styles/header.css';
 
 interface HeaderProps {
@@ -8,6 +10,13 @@ interface HeaderProps {
 }
 
 export const Header = ({ companyName, userName }: HeaderProps) => {
+
+    const navigate = useNavigate();
+
+    const handleHome = () => {
+        navigate('/home');
+    };
+
     return (
         <Navbar style={{
             backgroundColor: '#688BF9',
@@ -17,7 +26,7 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
             paddingBottom: '1rem'
         }}>
             <Navbar.Toggle />
-            <Navbar.Brand className='navBar-title'>PlanificaTech Suite</Navbar.Brand>
+            <Navbar.Brand className='navBar-title' onClick={handleHome}>PlanificaTech Suite</Navbar.Brand>
             <Navbar.Collapse className="justify-content-between">
                 <Nav>
                     <Nav.Item className='navBar-company'>{companyName}</Nav.Item>
@@ -27,6 +36,10 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                         <span style={{ marginRight: '2rem' }}>{userName}</span>
                         <div style={{ marginRight: '2rem' }}>
                             <FaUser />
+                        </div>
+                        
+                        <div style={{ marginRight: '2rem' }}>
+                            <Logout />
                         </div>
                     </Nav.Item>
                 </Nav>
