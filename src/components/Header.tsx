@@ -19,11 +19,9 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
 
     return (
         <Navbar style={{
-            backgroundColor: '#688BF9',
+            backgroundColor: 'rgba(7,119,238,0.8374999658066351)',
             color: 'black',
-            paddingTop: '1rem',
             paddingRight: '1rem',
-            paddingBottom: '1rem'
         }}>
             <Navbar.Toggle />
             <Navbar.Brand className='navBar-title' onClick={handleHome}>PlanificaTech Suite</Navbar.Brand>

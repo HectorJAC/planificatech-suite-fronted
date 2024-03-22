@@ -40,9 +40,9 @@ export const Login = () => {
         <div className='fondo'> 
             <form onSubmit={handleLogin}>
                 <Container fluid>
-                    <Row className='d-flex justify-content-center align-items-center h-100'>
+                    <Row className='d-flex justify-content-center align-items-center'>
                         <Col col='12'>
-                            <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '500px' }}>
+                            <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '480px' }}>
                                 <Card.Body className='p-5 w-100 d-flex flex-column'>
                                     <img 
                                         src="/public/logo.png" 
