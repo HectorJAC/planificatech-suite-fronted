@@ -2,6 +2,7 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ProtectedRoute } from "./components/ProtectedRoute/ProtectedRoute";
 import { Login } from "./pages/Login";
 import { HomePage } from "./pages/HomePage";
+import { ForgetPasswordPage } from "./pages/ForgetPasswordPage";
 
 function App() {
 
@@ -9,6 +10,7 @@ function App() {
     <BrowserRouter>
         <Routes>
           <Route path='/' element={<Login />} />
+          <Route path='/forget_password' element={<ForgetPasswordPage />} />
           <Route element={<ProtectedRoute />} >
             <Route path='/home' element={<HomePage />} />
           </Route>
