@@ -87,7 +87,7 @@ export const Login = () => {
                                         style={{ cursor: 'pointer' }}
                                         onClick={gotoForgetPassword}
                                     >
-                                        ¿Ha Olvidado su contraseña?
+                                        ¿Ha olvidado su contraseña?
                                     </Form.Text>
                                 </Card.Body>
                             </Card>
