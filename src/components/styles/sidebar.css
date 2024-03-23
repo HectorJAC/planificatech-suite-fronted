@@ -17,7 +17,18 @@
     background-color: #bdc3c6;
     border-right: 8px solid #688BF9;
     padding-left: 5px;
+}
 
+.sidebar-subbutton.nav-link {
+    text-transform: uppercase;
+    color: black;
+    font-size: 15px;
+    font-weight: 400;
+    padding: 20px 0;
+    margin-left: 20px;
+    display: block;
+    text-decoration: none;
+    transition: all 0.3s ease;
 }
 
 .sidebar {
@@ -27,5 +38,5 @@
     background-color: #E5E8EA;
     border-right: 1px solid black;
     z-index: 2; 
-    height: 80.5vh;
+    height: 100%;
 }

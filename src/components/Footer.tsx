@@ -4,11 +4,14 @@ import { Col, Row } from 'react-bootstrap';
 export const Footer = () => {
     return (
         <footer
-            style={{
-                backgroundColor: '#e9ecef',
-                padding: '0.8rem',
-                marginTop: 'auto',
-            }}
+        style={{
+            backgroundColor: '#e9ecef',
+            padding: '0.8rem',
+            marginTop: 'auto',
+            position: 'inherit', 
+            bottom: 0, 
+            width: '100%' 
+        }}
         >
             <Container>
                 <Row>

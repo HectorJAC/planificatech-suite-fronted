@@ -8,50 +8,55 @@ import {
     Col, 
     Card, 
     Form, 
-    Button,
-    
+    Button 
 } from 'react-bootstrap';
+import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import "react-toastify/dist/ReactToastify.css";
 
-export const Login = () => {
+export const ForgetPasswordPage = () => {
     
     const [username, setUsername] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
+    const [newPassword, setNewPassword] = useState<string>('');
+    const [repeatPassword, setRepeatPassword] = useState<string>('');
 
     const navigate = useNavigate();
 
-    const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (username === '' || password === '') {
+        if (username === '' || newPassword === '' || repeatPassword === '') {
             toast.error('Todos los campos son requeridos');
+        } else if (newPassword !== repeatPassword) {
+            toast.error('Las contraseñas no coinciden');
         } else {
-            axios.post(`${import.meta.env.VITE_API_URL}/login`, {
+            axios.put(`${import.meta.env.VITE_API_URL}/forget_password`, {
                 username: username,
-                password: password
+                password: newPassword
             })
             .then(response => {
-                navigate('/home');
-                localStorage.setItem('accesToken', response.data.accessToken);
+                toast.success(`${response.data.message}`);
+                setTimeout(() => {
+                    navigate('/');
+                }, 2000);
             })
             .catch(error => {
                 toast.error(`${error.response.data.message}`);
             });
-        }
-    };  
+        } 
+    };       
     
-    const gotoForgetPassword = () => {
-        navigate('/forget_password');
+    const gotoLogin = () => {
+        navigate('/');
     };
 
     return (
-        <Background style={{height: '100vh'}}> 
-            <form onSubmit={handleLogin}>
+        <Background style={{height: '100%'}}> 
+            <form onSubmit={handleChangePassword}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>
                         <Col col='12'>
-                            <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '480px' }}>
+                            <Card className='bg-white my-3 mx-auto' style={{ borderRadius: '1rem', maxWidth: '480px' }}>
                                 <Card.Body className='p-5 w-100 d-flex flex-column'>
                                     <img 
                                         src="/logo.png" 
@@ -60,35 +65,44 @@ export const Login = () => {
                                         style={{ height: '250px', width: '400px' }}
                                     />
 
+                                    <Form.Text
+                                        className='text-primary mb-4'
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={gotoLogin}
+                                    >
+                                        <FaAngleLeft/> Volver
+                                    </Form.Text>
+
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Usuario</Form.Label>
+                                        <Form.Label>Ingrese su Usuario</Form.Label>
                                         <Form.Control 
                                             type='text' 
-                                            size="lg"  
+                                            size="lg" 
                                             onChange={(e) => setUsername(e.target.value)}
                                         />
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Contraseña</Form.Label>
+                                        <Form.Label>Ingrese la Nueva Contraseña</Form.Label>
                                         <Form.Control 
                                             type='password' 
-                                            size="lg"
-                                            onChange={(e) => setPassword(e.target.value)}
+                                            size="lg" 
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                        />
+                                    </Form.Group>
+
+                                    <Form.Group className='mb-4 w-100'>
+                                        <Form.Label>Repita la Nueva Contraseña</Form.Label>
+                                        <Form.Control 
+                                            type='password' 
+                                            size="lg" 
+                                            onChange={(e) => setRepeatPassword(e.target.value)}
                                         />
                                     </Form.Group>
 
                                     <Button size='lg' className="mb-2 w-100" type='submit'>
-                                        Iniciar Sesión
+                                        Cambiar Contraseña
                                     </Button>
-
-                                    <Form.Text
-                                        className='text-center text-primary'
-                                        style={{ cursor: 'pointer' }}
-                                        onClick={gotoForgetPassword}
-                                    >
-                                        ¿Ha olvidado su contraseña?
-                                    </Form.Text>
                                 </Card.Body>
                             </Card>
                         </Col>
