@@ -11,7 +11,7 @@ export const Layout = ({children}: LayoutProps) => {
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
             <Header 
                 companyName="Empresa XYZ" 
-                userName="Juan Perez"
+                userName={`${localStorage.getItem('username')}`}
             />
             <div style={{ display: 'flex', flex: 1 }}>
                 <Sidebar />
