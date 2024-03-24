@@ -1,6 +1,6 @@
-//import { useState } from 'react';
-//import axios from 'axios';
-//import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { ToastContainer } from 'react-toastify';
 import { 
     Container,
@@ -11,35 +11,38 @@ import {
     Button,
     
 } from 'react-bootstrap';
+import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import "react-toastify/dist/ReactToastify.css";
 
+interface SectorEmpresaProps {
+    id_sector_empresa: number;
+    nombre_sector: string;
+}
+
 export const NewCompany = () => {
+
+    const [sectores, setSectores] = useState<SectorEmpresaProps[]>([]);
+    const navigate = useNavigate();
     
-    // const [username, setUsername] = useState<string>('');
-    // const [password, setPassword] = useState<string>('');
+    // Traer los datos de los sectores de las empresas
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/sector_empresa`)
+        .then((response) => {
+            setSectores(response.data);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    }, []);
 
-    // const navigate = useNavigate();
+    const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        console.log(e.target.value);
+    };
 
-    // const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-
-    //     if (username === '' || password === '') {
-    //         toast.error('Todos los campos son requeridos');
-    //     } else {
-    //         axios.post(`${import.meta.env.VITE_API_URL}/login`, {
-    //             username: username,
-    //             password: password
-    //         })
-    //         .then(response => {
-    //             navigate('/home');
-    //             localStorage.setItem('accesToken', response.data.accessToken);
-    //         })
-    //         .catch(error => {
-    //             toast.error(`${error.response.data.message}`);
-    //         });
-    //     }
-    // };  
+    const gotoLogin = () => {
+        navigate('/');
+    };
 
     return (
         <Background style={{height: '100%'}}> 
@@ -50,6 +53,15 @@ export const NewCompany = () => {
                             <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1000px' }}>
                                 <Card.Body className='p-5 w-100 d-flex flex-column'>
                                     <h1 className='text-center mb-4'>Crear Empresa</h1>
+
+                                    <Form.Text
+                                        className='text-primary mb-4'
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={gotoLogin}
+                                    >
+                                        <FaAngleLeft/> Volver
+                                    </Form.Text>
+
                                     <Form.Group className='mb-4 w-100'>
                                         <Form.Label>Nombre de la Empresa</Form.Label>
                                         <Form.Control 
@@ -99,17 +111,30 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Sector a la que pertenece la empresa</Form.Label>
-                                        <Form.Select
-                                            size="lg"
-                                        >
-                                            <option>Seleccione el sector</option>
-                                            <option value="1">Tecnología</option>
-                                            <option value="2">Educación</option>
-                                            <option value="3">Salud</option>
-                                            <option value="4">Finanzas</option>
-                                            <option value="5">Turismo</option>
+                                        <Form.Label>Seleccionar Sector al que pertenece la Empresa</Form.Label>
+                                        <Form.Select size="lg" onChange={handleSelect}>
+                                            <option key="default" value="">Seleccione un sector</option>
+                                            {
+                                                sectores.map((sector) => (
+                                                    <option 
+                                                        key={sector.id_sector_empresa} 
+                                                        value={sector.id_sector_empresa}
+                                                    >
+                                                        {sector.nombre_sector}
+                                                    </option>
+                                                ))
+                                            }
                                         </Form.Select>
+                                    </Form.Group>
+
+                                    <Form.Group className='mb-4 w-100'>
+                                        <Form.Label>Director de la empresa</Form.Label>
+                                        <Form.Control 
+                                            type='email' 
+                                            size="lg"
+                                            disabled
+                                            value={`${localStorage.getItem('username')}`}
+                                        />
                                     </Form.Group>
 
                                     <Button size='lg' className="mb-2 w-100" type='submit'>
