@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { 
     Container,
     Row, 
     Col, 
     Card, 
     Form, 
-    Button,
-    
+    Button
 } from 'react-bootstrap';
 import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
@@ -22,7 +21,14 @@ interface SectorEmpresaProps {
 
 export const NewCompany = () => {
 
+    const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
+    const [rncEmpresa, setRncEmpresa] = useState<number>();
+    const [fechaFundacion, setFechaFundacion] = useState<string>('');
+    const [direccionEmpresa, setDireccionEmpresa] = useState<string>('');
+    const [telefonoEmpresa, setTelefonoEmpresa] = useState<number>();
+    const [correoEmpresa, setCorreoEmpresa] = useState<string>('');
     const [sectores, setSectores] = useState<SectorEmpresaProps[]>([]);
+
     const navigate = useNavigate();
     
     // Traer los datos de los sectores de las empresas
@@ -37,7 +43,56 @@ export const NewCompany = () => {
     }, []);
 
     const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        console.log(e.target.value);
+        const sector = sectores.find((sector) => sector.id_sector_empresa === parseInt(e.target.value));
+        if (sector) {
+            setSectores([sector]);
+        }
+    };
+
+    const handleCreateCompany = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (nombreEmpresa === '' || rncEmpresa === undefined || fechaFundacion === '' || direccionEmpresa === '' || telefonoEmpresa === undefined || correoEmpresa === '') {
+            toast.error('Todos los campos son requeridos');
+        } else if (rncEmpresa.toString().length < 9 || rncEmpresa.toString().length > 13){
+            toast.error('El RNC debe tener entre 9 y 13 digitos');
+        } else if (rncEmpresa !== undefined) {
+            axios.get(`${import.meta.env.VITE_API_URL}/empresas/verifyRNC`, {
+                params: {
+                    rnc_empresa: rncEmpresa
+                }
+            })
+            .then((response) => {
+                if (response.data.message === 'Este RNC ya esta registrado') {
+                    toast.error('Este RNC ya esta registrado');
+                } else {
+                    axios.post(`${import.meta.env.VITE_API_URL}/empresas/createCompany`, {
+                        nombre_empresa: nombreEmpresa,
+                        rnc_empresa: rncEmpresa,
+                        fecha_fundacion: fechaFundacion,
+                        direccion_empresa: direccionEmpresa,
+                        numero_telefonico: telefonoEmpresa,
+                        correo_empresa: correoEmpresa,
+                        id_sector: sectores[0].id_sector_empresa,
+                        id_director_general: localStorage.getItem('id'),
+                        estado: 'ACTIVO'
+                    })
+                    .then((response) => {
+                        toast.success('Empresa registrada exitosamente');
+                        toast.success(`Bienvenido a ${response.data.empresa.nombre_empresa}`);
+                        setTimeout(() => {
+                            navigate('/home');
+                        }, 2000);
+                    })
+                    .catch((error) => {
+                        toast.error(`${error.response.data.message}`);
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        }
     };
 
     const gotoLogin = () => {
@@ -46,13 +101,13 @@ export const NewCompany = () => {
 
     return (
         <Background style={{height: '100%'}}> 
-            <form>
+            <form onSubmit={handleCreateCompany}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>
                         <Col col='12'>
                             <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1000px' }}>
                                 <Card.Body className='p-5 w-100 d-flex flex-column'>
-                                    <h1 className='text-center mb-4'>Crear Empresa</h1>
+                                    <h1 className='text-center mb-4'>Registrar Empresa</h1>
 
                                     <Form.Text
                                         className='text-primary mb-4'
@@ -66,7 +121,8 @@ export const NewCompany = () => {
                                         <Form.Label>Nombre de la Empresa</Form.Label>
                                         <Form.Control 
                                             type='text'
-                                            size="lg"  
+                                            size="lg" 
+                                            onChange={(e) => setNombreEmpresa(e.target.value)} 
                                         />
                                     </Form.Group>
 
@@ -75,6 +131,7 @@ export const NewCompany = () => {
                                         <Form.Control 
                                             type='number' 
                                             size="lg"
+                                            onChange={(e) => setRncEmpresa(parseInt(e.target.value))}
                                         />
                                     </Form.Group>
 
@@ -83,6 +140,7 @@ export const NewCompany = () => {
                                         <Form.Control 
                                             type='date' 
                                             size="lg"
+                                            onChange={(e) => setFechaFundacion(e.target.value)}
                                         />
                                     </Form.Group>
 
@@ -91,6 +149,7 @@ export const NewCompany = () => {
                                         <Form.Control 
                                             type='text' 
                                             size="lg"
+                                            onChange={(e) => setDireccionEmpresa(e.target.value)}
                                         />
                                     </Form.Group>
 
@@ -99,6 +158,7 @@ export const NewCompany = () => {
                                         <Form.Control 
                                             type='number' 
                                             size="lg"
+                                            onChange={(e) => setTelefonoEmpresa(parseInt(e.target.value))}
                                         />
                                     </Form.Group>
 
@@ -107,6 +167,7 @@ export const NewCompany = () => {
                                         <Form.Control 
                                             type='email' 
                                             size="lg"
+                                            onChange={(e) => setCorreoEmpresa(e.target.value)}
                                         />
                                     </Form.Group>
 
@@ -148,6 +209,5 @@ export const NewCompany = () => {
             </form>
             <ToastContainer />
         </Background>
-
     );
 }

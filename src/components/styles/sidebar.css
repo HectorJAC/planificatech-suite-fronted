@@ -1,7 +1,7 @@
 .sidebar-button.nav-link {
     text-transform: uppercase;
     color: black;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     padding: 20px 0;
     margin-left: 10px;
@@ -22,7 +22,7 @@
 .sidebar-subbutton.nav-link {
     text-transform: uppercase;
     color: black;
-    font-size: 15px;
+    font-size: 0.8rem;
     font-weight: 400;
     padding: 20px 0;
     margin-left: 20px;

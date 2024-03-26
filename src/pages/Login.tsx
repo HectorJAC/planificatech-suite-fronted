@@ -8,8 +8,7 @@ import {
     Col, 
     Card, 
     Form, 
-    Button,
-    
+    Button
 } from 'react-bootstrap';
 import { Background } from '../components/Background';
 import "react-toastify/dist/ReactToastify.css";
@@ -35,7 +34,6 @@ export const Login = () => {
                 localStorage.setItem('accesToken', response.data.accessToken);
                 localStorage.setItem('username', response.data.username);
                 localStorage.setItem('id', response.data.id_director_general);
-                console.log(response.data.id_director_general);
                 // Llamar a la api para que revise si el usuario tiene una empresa, esto mediante el id_director_general
                 axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
                     params: {
