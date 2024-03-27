@@ -64,7 +64,7 @@ export const Login = () => {
     };
 
     return (
-        <Background style={{height: '100vh'}}> 
+        <Background> 
             <form onSubmit={handleLogin}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>

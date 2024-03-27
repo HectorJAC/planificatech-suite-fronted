@@ -31,9 +31,11 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                 </Nav>
                 <Nav>
                     <Nav.Item className="d-flex align-items-center">
-                        <span style={{ marginRight: '2rem' }}>{userName}</span>
+                        <span style={{ marginRight: '2rem', fontSize: '1.5rem' }}>{userName}</span>
                         <div style={{ marginRight: '2rem' }}>
-                            <FaUser />
+                            <FaUser 
+                                size={25}
+                            />
                         </div>
                         
                         <div style={{ marginRight: '2rem' }}>

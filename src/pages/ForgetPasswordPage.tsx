@@ -51,7 +51,7 @@ export const ForgetPasswordPage = () => {
     };
 
     return (
-        <Background style={{height: '100%'}}> 
+        <Background> 
             <form onSubmit={handleChangePassword}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>

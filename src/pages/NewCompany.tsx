@@ -56,41 +56,27 @@ export const NewCompany = () => {
             toast.error('Todos los campos son requeridos');
         } else if (rncEmpresa.toString().length < 9 || rncEmpresa.toString().length > 13){
             toast.error('El RNC debe tener entre 9 y 13 digitos');
-        } else if (rncEmpresa !== undefined) {
-            axios.get(`${import.meta.env.VITE_API_URL}/empresas/verifyRNC`, {
-                params: {
-                    rnc_empresa: rncEmpresa
-                }
+        } else {
+            axios.post(`${import.meta.env.VITE_API_URL}/empresas/createCompany`, {
+                nombre_empresa: nombreEmpresa,
+                rnc_empresa: rncEmpresa,
+                fecha_fundacion: fechaFundacion,
+                direccion_empresa: direccionEmpresa,
+                numero_telefonico: telefonoEmpresa,
+                correo_empresa: correoEmpresa,
+                id_sector: sectores[0].id_sector_empresa,
+                id_director_general: localStorage.getItem('id'),
+                estado: 'ACTIVO'
             })
             .then((response) => {
-                if (response.data.message === 'Este RNC ya esta registrado') {
-                    toast.error('Este RNC ya esta registrado');
-                } else {
-                    axios.post(`${import.meta.env.VITE_API_URL}/empresas/createCompany`, {
-                        nombre_empresa: nombreEmpresa,
-                        rnc_empresa: rncEmpresa,
-                        fecha_fundacion: fechaFundacion,
-                        direccion_empresa: direccionEmpresa,
-                        numero_telefonico: telefonoEmpresa,
-                        correo_empresa: correoEmpresa,
-                        id_sector: sectores[0].id_sector_empresa,
-                        id_director_general: localStorage.getItem('id'),
-                        estado: 'ACTIVO'
-                    })
-                    .then((response) => {
-                        toast.success('Empresa registrada exitosamente');
-                        toast.success(`Bienvenido a ${response.data.empresa.nombre_empresa}`);
-                        setTimeout(() => {
-                            navigate('/home');
-                        }, 2000);
-                    })
-                    .catch((error) => {
-                        toast.error(`${error.response.data.message}`);
-                    });
-                }
+                toast.success('Empresa registrada exitosamente');
+                toast.success(`Bienvenido a ${response.data.empresa.nombre_empresa}`);
+                setTimeout(() => {
+                    navigate('/home');
+                }, 2000);
             })
             .catch((error) => {
-                console.log(error);
+                toast.error(`${error.response.data.message}`);
             });
         }
     };
@@ -100,7 +86,7 @@ export const NewCompany = () => {
     };
 
     return (
-        <Background style={{height: '100%'}}> 
+        <Background> 
             <form onSubmit={handleCreateCompany}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>

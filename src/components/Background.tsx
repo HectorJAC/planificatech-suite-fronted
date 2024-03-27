@@ -2,12 +2,11 @@ import './styles/background.css';
 
 interface BackgroundProps {
     children: React.ReactNode;
-    style: React.CSSProperties;
 }
 
-export const Background = ({ children, style }: BackgroundProps) => {
+export const Background = ({ children }: BackgroundProps) => {
     return (
-        <div className='fondo' style={style}>
+        <div className='fondo'>
             {children}
         </div>
     );
