@@ -11,6 +11,7 @@ import {
     Button
 } from 'react-bootstrap';
 import { Background } from '../components/Background';
+import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 
 export const Login = () => {
@@ -79,7 +80,7 @@ export const Login = () => {
                                     />
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Usuario</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Usuario</Form.Label>
                                         <Form.Control 
                                             type='text' 
                                             size="lg"  
@@ -88,7 +89,7 @@ export const Login = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Contraseña</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Contraseña</Form.Label>
                                         <Form.Control 
                                             type='password' 
                                             size="lg"

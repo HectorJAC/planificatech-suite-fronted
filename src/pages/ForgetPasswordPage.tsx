@@ -12,6 +12,7 @@ import {
 } from 'react-bootstrap';
 import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
+import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 
 export const ForgetPasswordPage = () => {
@@ -74,7 +75,7 @@ export const ForgetPasswordPage = () => {
                                     </Form.Text>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Ingrese su Usuario</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Ingrese su Usuario</Form.Label>
                                         <Form.Control 
                                             type='text' 
                                             size="lg" 
@@ -83,7 +84,7 @@ export const ForgetPasswordPage = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Ingrese la Nueva Contraseña</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Ingrese la Nueva Contraseña</Form.Label>
                                         <Form.Control 
                                             type='password' 
                                             size="lg" 
@@ -92,7 +93,7 @@ export const ForgetPasswordPage = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Repita la Nueva Contraseña</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Repita la Nueva Contraseña</Form.Label>
                                         <Form.Control 
                                             type='password' 
                                             size="lg" 

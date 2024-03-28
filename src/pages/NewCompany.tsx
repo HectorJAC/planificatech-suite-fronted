@@ -12,6 +12,7 @@ import {
 } from 'react-bootstrap';
 import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
+import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 
 interface SectorEmpresaProps {
@@ -104,7 +105,7 @@ export const NewCompany = () => {
                                     </Form.Text>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Nombre de la Empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Nombre de la Empresa</Form.Label>
                                         <Form.Control 
                                             type='text'
                                             size="lg" 
@@ -113,7 +114,7 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>RNC de la empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> RNC de la empresa</Form.Label>
                                         <Form.Control 
                                             type='number' 
                                             size="lg"
@@ -131,7 +132,7 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Dirección de la empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Dirección de la empresa</Form.Label>
                                         <Form.Control 
                                             type='text' 
                                             size="lg"
@@ -140,7 +141,7 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Número Telefonico de la empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Número Telefonico de la empresa</Form.Label>
                                         <Form.Control 
                                             type='number' 
                                             size="lg"
@@ -158,7 +159,7 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Seleccionar Sector al que pertenece la Empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Seleccionar Sector al que pertenece la Empresa</Form.Label>
                                         <Form.Select size="lg" onChange={handleSelect}>
                                             <option key="default" value="">Seleccione un sector</option>
                                             {
@@ -175,7 +176,7 @@ export const NewCompany = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Director de la empresa</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Director de la empresa</Form.Label>
                                         <Form.Control 
                                             type='email' 
                                             size="lg"
