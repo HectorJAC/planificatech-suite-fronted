@@ -1,7 +1,7 @@
 import { Navbar, Nav } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import { FaUser } from 'react-icons/fa';
 import { Logout } from '../components/Logout';
+import { ProfileButton } from './ProfileButton';
 import './styles/header.css';
 
 interface HeaderProps {
@@ -33,9 +33,7 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                     <Nav.Item className="d-flex align-items-center">
                         <span style={{ marginRight: '2rem', fontSize: '1.5rem' }}>{userName}</span>
                         <div style={{ marginRight: '2rem' }}>
-                            <FaUser 
-                                size={25}
-                            />
+                            <ProfileButton />
                         </div>
                         
                         <div style={{ marginRight: '2rem' }}>

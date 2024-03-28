@@ -4,6 +4,7 @@ import { Login } from "./pages/Login";
 import { HomePage } from "./pages/HomePage";
 import { ForgetPasswordPage } from "./pages/ForgetPasswordPage";
 import { NewCompany } from "./pages/NewCompany";
+import { ProfilePage } from "./pages/ProfilePage";
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
           <Route element={<ProtectedRoute />} >
             <Route path='/new_company' element={<NewCompany />} />
             <Route path='/home' element={<HomePage />} />
+            <Route path='/profile' element={<ProfilePage />} />
           </Route>
         </Routes>
     </BrowserRouter>
