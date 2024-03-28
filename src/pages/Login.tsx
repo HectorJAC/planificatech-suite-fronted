@@ -8,10 +8,10 @@ import {
     Col, 
     Card, 
     Form, 
-    Button,
-    
+    Button
 } from 'react-bootstrap';
 import { Background } from '../components/Background';
+import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 
 export const Login = () => {
@@ -32,8 +32,27 @@ export const Login = () => {
                 password: password
             })
             .then(response => {
-                navigate('/home');
                 localStorage.setItem('accesToken', response.data.accessToken);
+                localStorage.setItem('username', response.data.username);
+                localStorage.setItem('id', response.data.id_director_general);
+                // Llamar a la api para que revise si el usuario tiene una empresa, esto mediante el id_director_general
+                axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+                    params: {
+                        id_director_general: response.data.id_director_general
+                    }
+                })
+                .then(response => {
+                    toast.success(`Bienvenido a ${response.data.nombre_empresa}`);
+                    setTimeout(() => {
+                        navigate('/home');
+                    }, 2000);
+                })
+                .catch(error => {
+                    toast.info(`${error.response.data.message}`);
+                    setTimeout(() => {
+                        navigate('/new_company');
+                    }, 2000);
+                });
             })
             .catch(error => {
                 toast.error(`${error.response.data.message}`);
@@ -46,7 +65,7 @@ export const Login = () => {
     };
 
     return (
-        <Background style={{height: '100vh'}}> 
+        <Background> 
             <form onSubmit={handleLogin}>
                 <Container fluid>
                     <Row className='d-flex justify-content-center align-items-center'>
@@ -61,7 +80,7 @@ export const Login = () => {
                                     />
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Usuario</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Usuario</Form.Label>
                                         <Form.Control 
                                             type='text' 
                                             size="lg"  
@@ -70,7 +89,7 @@ export const Login = () => {
                                     </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
-                                        <Form.Label>Contraseña</Form.Label>
+                                        <Form.Label><CustomAsterisk/> Contraseña</Form.Label>
                                         <Form.Control 
                                             type='password' 
                                             size="lg"

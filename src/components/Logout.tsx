@@ -8,6 +8,8 @@ export const Logout = () => {
     const handleLogout = () => {
         // Eliminar el token de acceso del almacenamiento local
         localStorage.removeItem('accesToken');
+        localStorage.removeItem('username');
+        localStorage.removeItem('id');
 
         // Redirigir al usuario a la página de inicio de sesión
         navigate('/');
