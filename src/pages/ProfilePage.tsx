@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
+import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
-import axios from "axios";
 
 interface UserDataProps {
     username: string;
@@ -20,6 +22,8 @@ interface UserDataProps {
 }
 
 export const ProfilePage = () => {
+
+    const navigate = useNavigate();
     
     const [userData, setUserData] = useState<UserDataProps>({} as UserDataProps);
     const [editMode, setEditMode] = useState(false);
@@ -53,6 +57,31 @@ export const ProfilePage = () => {
         }
     };
 
+    const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+
+        if (passwordData.currentPassword === '' || passwordData.newPassword === '' || passwordData.newPassword === '') {
+            toast.error('Todos los campos son requeridos');
+        } else if (passwordData.currentPassword !== userData.password) {
+            toast.error('Contraseñas actual incorrecta');
+        } else if (passwordData.newPassword !== passwordData.newPassword) {
+            toast.error('Las contraseñas no coinciden');
+        } else {
+            axios.put(`${import.meta.env.VITE_API_URL}/change_password_director_general`, {
+                password: passwordData.newPassword
+            })
+            .then(response => {
+                toast.success(`${response.data.message}`);
+                setTimeout(() => {
+                    navigate('/profile');
+                }, 2000);
+            })
+            .catch(error => {
+                toast.error(`${error.response.data.message}`);
+            });
+        } 
+    }; 
+
     const handleSave = () => {
         console.log('Guardando cambios...');
     };
@@ -71,16 +100,12 @@ export const ProfilePage = () => {
 
     const handleCloseModal = () => {
         setShowModal(false);
-    };
-
-    const handleInputChange = (e: React.FormEvent<HTMLFormElement>) => {
-        console.log(e);
-    }
-
-    const handleChangePassword = () => {
-        // Lógica para cambiar la contraseña
-        console.log('Cambiando contraseña...');
-        handleCloseModal();
+        // Limpiar los campos del modal
+        setPasswordData({
+            currentPassword: '',
+            newPassword: '',
+            repeatPassword: ''
+        });
     };
 
     return (
@@ -172,7 +197,7 @@ export const ProfilePage = () => {
                                 <div className="d-flex align-items-center">
                                     <Form.Control 
                                         type="password" 
-                                        disabled={!editMode} 
+                                        disabled
                                         value={handleNull(userData.password)} 
                                     />
                                     <Button variant="secondary" onClick={handleShowModal} className="ms-2">Cambiar</Button>
@@ -227,45 +252,48 @@ export const ProfilePage = () => {
                 </Row>
 
                 {/* Modal para cambiar contraseña */}
-            <Modal show={showModal} onHide={handleCloseModal}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Cambiar Contraseña</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Contraseña Actual</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="currentPassword"
-                            value={''}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Nueva Contraseña</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="newPassword"
-                            value={''}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label>Repetir Nueva Contraseña</Form.Label>
-                        <Form.Control
-                            type="password"
-                            name="repeatPassword"
-                            value={''}
-                            onChange={handleInputChange}
-                        />
-                    </Form.Group>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="primary" onClick={handleChangePassword}>Guardar</Button>
-                    <Button variant="secondary" onClick={handleCloseModal}>Cancelar</Button>
-                </Modal.Footer>
-            </Modal>
+                <Modal show={showModal} onHide={handleCloseModal}>
+                    <form onSubmit={handleChangePassword}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>Cambiar Contraseña</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Contraseña Actual</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    name="currentPassword"
+                                    value={passwordData.currentPassword}
+                                    onChange={(e) => setPasswordData(prevState => ({ ...prevState, currentPassword: e.target.value }))}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Nueva Contraseña</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    name="newPassword"
+                                    value={passwordData.newPassword}
+                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                                />
+                            </Form.Group>
+                            <Form.Group className="mb-3">
+                                <Form.Label>Repetir Nueva Contraseña</Form.Label>
+                                <Form.Control
+                                    type="password"
+                                    name="repeatPassword"
+                                    value={passwordData.repeatPassword}
+                                    onChange={(e) => setPasswordData({ ...passwordData, repeatPassword: e.target.value })}
+                                />
+                            </Form.Group>
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="primary" type='submit'>Guardar</Button>
+                            <Button variant="secondary" onClick={handleCloseModal}>Cancelar</Button>
+                        </Modal.Footer>
+                    </form>
+                </Modal>
             </Container>
+            <ToastContainer />
         </Layout>
     );
 }
