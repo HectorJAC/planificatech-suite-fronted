@@ -5,6 +5,8 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import { Spinner } from "../components/Spinner";
+import { ModalAceptarCancelar } from "../components/ModalAceptarCancelar";
+import { CustomPasswordInput } from "../components/CustomPasswordInput";
 
 interface UserDataProps {
     username: string;
@@ -26,6 +28,7 @@ export const ProfilePage = () => {
     const [userData, setUserData] = useState<UserDataProps>({} as UserDataProps);
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
     const [passwordData, setPasswordData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -60,8 +63,6 @@ export const ProfilePage = () => {
 
         if (passwordData.currentPassword === '' || passwordData.newPassword === '' || passwordData.newPassword === '') {
             toast.error('Todos los campos son requeridos');
-        } else if (passwordData.currentPassword !== userData.password) {
-            toast.error('Contraseña actual incorrecta');
         } else if (passwordData.newPassword === userData.password) {
             toast.error('La nueva contraseña no puede ser igual a la actual');
         } else if (passwordData.newPassword !== passwordData.newPassword) {
@@ -114,6 +115,7 @@ export const ProfilePage = () => {
     };
     
     const handleCancel = () => {
+        setShowModalAceptarCancelar(false);
         setEditMode(false);
         // Hacer una peticion get para traer los datos del usuario
         axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneral`, {
@@ -145,6 +147,14 @@ export const ProfilePage = () => {
             newPassword: '',
             repeatPassword: ''
         });
+    };
+
+    const handleShowModalAceptarCancelar = () => {
+        setShowModalAceptarCancelar(true);
+    };
+
+    const handleCloseModalAceptarCancelar = () => {
+        setShowModalAceptarCancelar(false);
     };
 
     return (
@@ -208,6 +218,7 @@ export const ProfilePage = () => {
                                     <option value="soltero(a)">Soltero(a)</option>
                                     <option value="casado(a)">Casado(a)</option>
                                     <option value="viudo(a)">Viudo(a)</option>
+                                    <option value="union libre">Unión Libre</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -218,10 +229,15 @@ export const ProfilePage = () => {
                                     value={handleNull(userData.nivel_academico)}
                                 >
                                     <option value="primario">Primario</option>
-                                    <option value="secundario">Secundario</option>
-                                    <option value="bachiller">Bachiller</option>
+                                    <option value="secundario">Secundario(Bachillerato)</option>
                                     <option value="universitario">Universitario</option>
                                     <option value="profesional">Profesional</option>
+                                    <option value="diplomado">Diplomado</option>
+                                    <option value="certificacion">Certificación</option>
+                                    <option value="maestria">Maestría</option>
+                                    <option value="doctorado">Doctorado</option>
+                                    <option value="postgrado">Postgrado</option>
+                                    <option value="tecnico">Técnico</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -235,7 +251,7 @@ export const ProfilePage = () => {
                                             Guardar
                                         </Button>
 
-                                        <Button onClick={handleCancel} variant="secondary">
+                                        <Button onClick={handleShowModalAceptarCancelar} variant="secondary">
                                             Cancelar
                                         </Button>
                                     </>
@@ -324,33 +340,31 @@ export const ProfilePage = () => {
                             <Modal.Title>Cambiar Contraseña</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Contraseña Actual</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    name="currentPassword"
-                                    value={passwordData.currentPassword}
-                                    onChange={(e) => setPasswordData(prevState => ({ ...prevState, currentPassword: e.target.value }))}
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Nueva Contraseña</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    name="newPassword"
-                                    value={passwordData.newPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
-                                />
-                            </Form.Group>
-                            <Form.Group className="mb-3">
-                                <Form.Label>Repetir Nueva Contraseña</Form.Label>
-                                <Form.Control
-                                    type="password"
-                                    name="repeatPassword"
-                                    value={passwordData.repeatPassword}
-                                    onChange={(e) => setPasswordData({ ...passwordData, repeatPassword: e.target.value })}
-                                />
-                            </Form.Group>
+
+                            <CustomPasswordInput
+                                nameLabel="Contraseña Actual" 
+                                password={userData.password}
+                                name="currentPassword"
+                                readonly={true}
+                                onchange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                            />
+
+                            <CustomPasswordInput 
+                                nameLabel="Nueva Contraseña"
+                                password={passwordData.newPassword}
+                                name="newPassword"
+                                readonly={false}
+                                onchange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                            />
+
+                            <CustomPasswordInput
+                                nameLabel="Repetir Nueva Contraseña"
+                                password={passwordData.repeatPassword}
+                                name="repeatPassword"
+                                readonly={false}
+                                onchange={(e) => setPasswordData({ ...passwordData, repeatPassword: e.target.value })}
+                            />
+
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="primary" type='submit'>Guardar</Button>
@@ -358,6 +372,13 @@ export const ProfilePage = () => {
                         </Modal.Footer>
                     </form>
                 </Modal>
+                <ModalAceptarCancelar 
+                    show={showModalAceptarCancelar} 
+                    onHide={handleCloseModalAceptarCancelar} 
+                    onAceptar={handleCancel} 
+                    titulo="Cancelar" 
+                    mensaje="¿Estás seguro de cancelar la operación?"
+                />
             </Container>
             <ToastContainer />
         </Layout>
