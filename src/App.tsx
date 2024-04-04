@@ -6,6 +6,7 @@ import { ForgetPasswordPage } from "./pages/ForgetPasswordPage";
 import { NewCompany } from "./pages/NewCompany";
 import { ProfilePage } from "./pages/ProfilePage";
 import { ErrorPage } from "./pages/ErrorPage";
+import { PuestosPage } from "./pages/PuestosPage";
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
             <Route path='/new_company' element={<NewCompany />} />
             <Route path='/home' element={<HomePage />} />
             <Route path='/profile' element={<ProfilePage />} />
+            <Route path='/puestos' element={<PuestosPage />} />
           </Route>
         </Routes>
     </BrowserRouter>

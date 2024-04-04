@@ -30,7 +30,6 @@ export const ProfilePage = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
     const [passwordData, setPasswordData] = useState({
-        currentPassword: '',
         newPassword: '',
         repeatPassword: ''
     });
@@ -61,7 +60,7 @@ export const ProfilePage = () => {
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (passwordData.currentPassword === '' || passwordData.newPassword === '' || passwordData.newPassword === '') {
+        if (passwordData.newPassword === '' || passwordData.newPassword === '') {
             toast.error('Todos los campos son requeridos');
         } else if (passwordData.newPassword === userData.password) {
             toast.error('La nueva contraseña no puede ser igual a la actual');
@@ -143,7 +142,6 @@ export const ProfilePage = () => {
         setShowModal(false);
         // Limpiar los campos del modal
         setPasswordData({
-            currentPassword: '',
             newPassword: '',
             repeatPassword: ''
         });
@@ -346,7 +344,6 @@ export const ProfilePage = () => {
                                 password={userData.password}
                                 name="currentPassword"
                                 readonly={true}
-                                onchange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                             />
 
                             <CustomPasswordInput 

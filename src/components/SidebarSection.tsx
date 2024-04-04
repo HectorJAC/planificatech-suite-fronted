@@ -16,10 +16,11 @@ export const SidebarSection = ({ section, children }: SidebarSectionProps) => {
     };
 
     return (
-        <Accordion defaultActiveKey="">
+        <Accordion>
             <Nav.Link 
                 className='sidebar-button' 
                 onClick={() => handleSectionClick(section)}
+                active={openSection === section}
             >
                 {section} <FaAngleDown />
             </Nav.Link>
