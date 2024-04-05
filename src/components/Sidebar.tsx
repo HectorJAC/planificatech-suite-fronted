@@ -9,8 +9,11 @@ export const Sidebar = () => {
 
     return (
         <div className="sidebar">
+            <SidebarSection section="Dashboard">
+                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/dashboard')}>Dashboard</Nav.Link>
+            </SidebarSection>
             <SidebarSection section="Empresas">
-                <Nav.Link className="sidebar-subbutton">Editar Empresa</Nav.Link>
+                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/edit_company')}>Editar Empresa</Nav.Link>
                 <Nav.Link className="sidebar-subbutton">Consultas Empresa</Nav.Link>
                 <Nav.Link className="sidebar-subbutton">Gráficas Empresa</Nav.Link>
             </SidebarSection>
