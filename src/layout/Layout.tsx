@@ -27,7 +27,7 @@ export const Layout = ({children}: LayoutProps) => {
     }, []);
 
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', zIndex: 1, marginLeft: '200px', marginTop: '50px' }}>
             <Header 
                 companyName={`${nombreEmpresa}`} 
                 userName={`${localStorage.getItem('username')}`}

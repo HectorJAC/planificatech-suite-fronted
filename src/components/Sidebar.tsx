@@ -49,7 +49,7 @@ export const Sidebar = () => {
                 <Nav.Link className="sidebar-subbutton">Gráficas Planes</Nav.Link>
             </SidebarSection>
             <SidebarSection section="Gráficas">
-                <Nav.Link className="sidebar-subbutton">Generar Gráficas</Nav.Link>
+                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/graphics')}>Generar Gráficas</Nav.Link>
             </SidebarSection>
         </div>
     );

@@ -32,8 +32,9 @@
 }
 
 .sidebar {
-    position: relative;
-    top: 0;
+    position: fixed;
+    top: 55px;
+    left: 0;
     width: 200px;
     background-color: #E5E8EA;
     border-right: 1px solid black;

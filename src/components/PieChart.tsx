@@ -1,6 +1,6 @@
-import { Bar } from "react-chartjs-2";
+import { Pie } from "react-chartjs-2";
 
-interface BarChartProps {
+interface PieChartProps {
     title: string;
     chartData: {
         labels: string[];
@@ -12,10 +12,10 @@ interface BarChartProps {
     };
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ title, chartData }) => {
+export const PieChart: React.FC<PieChartProps> = ({ title, chartData }) => {
     return (
         <div className="chart-container">
-            <Bar
+            <Pie
                 width={600}
                 height={500}
                 data={chartData}
@@ -26,7 +26,7 @@ export const BarChart: React.FC<BarChartProps> = ({ title, chartData }) => {
                             text: title
                         },
                         legend: {
-                            display: false
+                            display: true
                         }
                     },
                     maintainAspectRatio: false
@@ -35,3 +35,4 @@ export const BarChart: React.FC<BarChartProps> = ({ title, chartData }) => {
         </div>
     );
 };
+  

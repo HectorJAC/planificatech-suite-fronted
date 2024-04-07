@@ -16,6 +16,11 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
             backgroundColor: 'rgba(7,119,238,0.8374999658066351)',
             color: 'black',
             paddingRight: '1rem',
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            zIndex: 3,
+            width: '100%',
         }}>
             <Navbar.Toggle />
             <Navbar.Brand className='navBar-title'><PlanificaTechSuiteButton /></Navbar.Brand>

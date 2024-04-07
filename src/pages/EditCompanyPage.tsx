@@ -1,9 +1,11 @@
 import { useState, useEffect, ChangeEvent } from "react";
 import axios from "axios";
-import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
+import { getImageUrl } from "../components/helpers/getImageUrl";
+import { ModalAceptarCancelar } from "../components/ModalAceptarCancelar";
 
 interface CompanyDataProps {
     id_empresa: number;
@@ -25,6 +27,7 @@ interface SectorEmpresaProps {
 export const EditCompanyPage = () => {
     const [companyData, setCompanyData] = useState<CompanyDataProps>({} as CompanyDataProps);
     const [sectores, setSectores] = useState<SectorEmpresaProps[]>([]);
+    const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
 
     useEffect(() => {
         const getCompanyData = async () => {
@@ -62,6 +65,14 @@ export const EditCompanyPage = () => {
         }
     };
 
+    const handleShowModalAceptarCancelar = () => {
+        setShowModalAceptarCancelar(true);
+    };
+
+    const handleCloseModalAceptarCancelar = () => {
+        setShowModalAceptarCancelar(false);
+    };
+
     // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     //     setCompanyData({
     //         ...companyData,
@@ -78,9 +89,7 @@ export const EditCompanyPage = () => {
         }
     };
 
-    const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
+    const handleFormSubmit = async () => {
         if (companyData.nombre_empresa === '' || companyData.rnc_empresa === '' || companyData.direccion_empresa === '' || companyData.numero_telefonico === '' || companyData.id_sector === 0) {
             toast.error('Llenar los campos requeridos');
         } else {
@@ -102,6 +111,22 @@ export const EditCompanyPage = () => {
             .catch((error) => {
                 console.log(error);
             });
+
+            // Cerrar el modal
+            setShowModalAceptarCancelar(false);
+
+            // Volver a cargar los datos de la empresa
+            axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+                params: {
+                    id_director_general: localStorage.getItem('id')
+                }
+            })
+            .then(response => {
+                setCompanyData(response.data);
+            })
+            .catch(error => {
+                console.log(error);
+            });
         }
     };
 
@@ -109,19 +134,8 @@ export const EditCompanyPage = () => {
         <Layout>
             <Container>
                 <h1>Editar empresa</h1>
-                <Form onSubmit={handleFormSubmit}>
+                <Form>
                     <Row>
-                        <Col>
-                            <Form.Group>
-                                <Form.Label>ID de la empresa</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="id_empresa"
-                                    value={companyData.id_empresa}
-                                    disabled
-                                />
-                            </Form.Group>
-                        </Col>
                         <Col>
                             <Form.Group>
                                 <Form.Label><CustomAsterisk /> Nombre de la empresa</Form.Label>
@@ -149,13 +163,32 @@ export const EditCompanyPage = () => {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label>Logo de la Empresa</Form.Label>
-                                <Form.Control
-                                    type="file"
-                                    name="logo_empresa"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
+                                <Form.Label className="mt-3">Logo de la Empresa</Form.Label>
+                                {
+                                    companyData?.logo_empresa ? (
+                                        <div>
+                                            <Image 
+                                            src={getImageUrl(companyData.logo_empresa)} 
+                                            alt="Logo de la empresa" 
+                                            fluid
+                                            className="mb-2"
+                                            />
+                                            <Form.Control
+                                                type="file"
+                                                name="logo_empresa"
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Form.Control
+                                            type="file"
+                                            name="logo_empresa"
+                                            accept="image/*"
+                                            onChange={handleFileChange}
+                                        />
+                                    )
+                                }
                             </Form.Group>
                         </Col>
                     </Row>
@@ -163,7 +196,7 @@ export const EditCompanyPage = () => {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label>Fecha de fundación</Form.Label>
+                                <Form.Label className="mt-3">Fecha de fundación</Form.Label>
                                 <Form.Control
                                     type="date"
                                     name="fecha_fundacion"
@@ -174,7 +207,7 @@ export const EditCompanyPage = () => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label><CustomAsterisk /> Dirección de la empresa</Form.Label>
+                                <Form.Label className="mt-3"><CustomAsterisk /> Dirección de la empresa</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="direccion_empresa"
@@ -187,7 +220,7 @@ export const EditCompanyPage = () => {
                     <Row>
                         <Col>
                             <Form.Group>
-                                <Form.Label><CustomAsterisk /> Número telefónico</Form.Label>
+                                <Form.Label className="mt-3"><CustomAsterisk /> Número telefónico</Form.Label>
                                 <Form.Control
                                     type="text"
                                     name="numero_telefonico"
@@ -198,7 +231,7 @@ export const EditCompanyPage = () => {
                         </Col>
                         <Col>
                             <Form.Group>
-                                <Form.Label>Correo electrónico</Form.Label>
+                                <Form.Label className="mt-3">Correo electrónico</Form.Label>
                                 <Form.Control
                                     type="email"
                                     name="correo_empresa"
@@ -211,7 +244,7 @@ export const EditCompanyPage = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className='mb-4 w-100'>
-                                <Form.Label><CustomAsterisk/> Seleccionar Sector al que pertenece la Empresa</Form.Label>
+                                <Form.Label className="mt-3"><CustomAsterisk/> Seleccionar Sector al que pertenece la Empresa</Form.Label>
                                 <Form.Select onChange={handleSelect} value={companyData.id_sector}>
                                     <option key="default" value="">Seleccione un sector</option>
                                     {
@@ -227,9 +260,28 @@ export const EditCompanyPage = () => {
                                 </Form.Select>
                             </Form.Group>
                         </Col>
+
+                        <Col>
+                            <Form.Group>
+                                <Form.Control
+                                    type="text"
+                                    name="id_empresa"
+                                    value={companyData.id_empresa}
+                                    hidden
+                                />
+                            </Form.Group>
+                        </Col>
                     </Row>
-                    <Button type="submit">Guardar cambios</Button>
+                    <Button onClick={handleShowModalAceptarCancelar} className="mb-3">Guardar cambios</Button>
                 </Form>
+
+                <ModalAceptarCancelar 
+                    show={showModalAceptarCancelar} 
+                    onHide={handleCloseModalAceptarCancelar} 
+                    onAceptar={handleFormSubmit} 
+                    titulo="Guardar Cambios" 
+                    mensaje="¿Estás seguro de guardar los cambios realizados?"
+                />
             </Container>
             <ToastContainer />
         </Layout>

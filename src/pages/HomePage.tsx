@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Image } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
+import { getImageUrl } from "../components/helpers/getImageUrl";
 
 interface CompanyDataProps {
     logo_empresa?: string;
@@ -24,11 +25,6 @@ export const HomePage = () => {
             console.log(error);
         });
     }, []);
-
-    const getImageUrl = (imageName: string) => {
-        // Reemplaza "images" con la ruta base donde se almacenan tus imágenes
-        return `/public/${imageName}`;
-    };
     
     return (
         <Layout>
