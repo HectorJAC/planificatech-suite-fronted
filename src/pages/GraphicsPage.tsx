@@ -96,7 +96,6 @@ export const GraphicsPage = () => {
                                 <Form.Select onChange={handleTipoGraficoChange}>
                                     <option>Selecciona una opción</option>
                                     <option>Gráfico de barras</option>
-                                    <option>Gráfico de líneas</option>
                                     <option>Gráfico circular</option>
                                 </Form.Select>
                             </Form.Group>

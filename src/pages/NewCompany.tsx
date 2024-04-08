@@ -54,8 +54,8 @@ export const NewCompany = () => {
     const handleCreateCompany = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (nombreEmpresa === '' || rncEmpresa === undefined || fechaFundacion === '' || direccionEmpresa === '' || telefonoEmpresa === undefined || correoEmpresa === '') {
-            toast.error('Todos los campos son requeridos');
+        if (nombreEmpresa === '' || rncEmpresa === undefined || fechaFundacion === '' || direccionEmpresa === '' || telefonoEmpresa === undefined) {
+            toast.error('Llenas los campos requeridos');
         } else if (rncEmpresa.toString().length < 9 || rncEmpresa.toString().length > 13){
             toast.error('El RNC debe tener entre 9 y 13 digitos');
         } else {

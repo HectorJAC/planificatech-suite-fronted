@@ -35,11 +35,26 @@ export const DashboardPage = () => {
         ],
     });
 
+    const [idEmpresa, setIdEmpresa] = useState<number>();
     const [employees, setEmployees] = useState<EmployeeDataProps>();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(4);
 
     useEffect(() => {
+        const getCompanyData = async () => {
+            axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+                params: {
+                    id_director_general: localStorage.getItem('id')
+                }
+            })
+            .then(response => {
+                setIdEmpresa(response.data.id_empresa);
+            })
+            .catch(error => {
+                console.log(error);
+            });
+        };
+
         const getGraphData = async () => {
             axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getEmpleadosPorDepartamento`)
             .then((response) => {
@@ -62,6 +77,7 @@ export const DashboardPage = () => {
         const getEmployees = async (page:number, limit:number) => {
             axios.get(`${import.meta.env.VITE_API_URL}/empleados/getAllEmployees`, {
                 params: {
+                    id_empresa: idEmpresa,
                     page: page,
                     limit: limit,
                 }
@@ -74,9 +90,10 @@ export const DashboardPage = () => {
             });
         };
 
+        getCompanyData();
         getGraphData();
         getEmployees(page, limit);
-    }, [page, limit]);
+    }, [page, limit, idEmpresa]);
 
     return (
         <Layout>
