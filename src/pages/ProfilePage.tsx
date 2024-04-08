@@ -30,7 +30,6 @@ export const ProfilePage = () => {
     const [showModal, setShowModal] = useState(false);
     const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
     const [passwordData, setPasswordData] = useState({
-        currentPassword: '',
         newPassword: '',
         repeatPassword: ''
     });
@@ -61,7 +60,7 @@ export const ProfilePage = () => {
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (passwordData.currentPassword === '' || passwordData.newPassword === '' || passwordData.newPassword === '') {
+        if (passwordData.newPassword === '' || passwordData.newPassword === '') {
             toast.error('Todos los campos son requeridos');
         } else if (passwordData.newPassword === userData.password) {
             toast.error('La nueva contraseña no puede ser igual a la actual');
@@ -143,7 +142,6 @@ export const ProfilePage = () => {
         setShowModal(false);
         // Limpiar los campos del modal
         setPasswordData({
-            currentPassword: '',
             newPassword: '',
             repeatPassword: ''
         });
@@ -215,10 +213,10 @@ export const ProfilePage = () => {
                                     disabled={!editMode}
                                     value={handleNull(userData.estado_civil)}
                                 >
-                                    <option value="soltero(a)">Soltero(a)</option>
-                                    <option value="casado(a)">Casado(a)</option>
-                                    <option value="viudo(a)">Viudo(a)</option>
-                                    <option value="union libre">Unión Libre</option>
+                                    <option value="Soltero(a)">Soltero(a)</option>
+                                    <option value="Casado(a)">Casado(a)</option>
+                                    <option value="Viudo(a)">Viudo(a)</option>
+                                    <option value="Union Libre">Unión Libre</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -228,16 +226,16 @@ export const ProfilePage = () => {
                                     disabled={!editMode}
                                     value={handleNull(userData.nivel_academico)}
                                 >
-                                    <option value="primario">Primario</option>
-                                    <option value="secundario">Secundario(Bachillerato)</option>
-                                    <option value="universitario">Universitario</option>
-                                    <option value="profesional">Profesional</option>
-                                    <option value="diplomado">Diplomado</option>
-                                    <option value="certificacion">Certificación</option>
-                                    <option value="maestria">Maestría</option>
-                                    <option value="doctorado">Doctorado</option>
-                                    <option value="postgrado">Postgrado</option>
-                                    <option value="tecnico">Técnico</option>
+                                    <option value="Primario">Primario</option>
+                                    <option value="Secundario">Secundario(Bachillerato)</option>
+                                    <option value="Universitario">Universitario</option>
+                                    <option value="Profesional">Profesional</option>
+                                    <option value="Diplomado">Diplomado</option>
+                                    <option value="Certificacion">Certificación</option>
+                                    <option value="Maestria">Maestría</option>
+                                    <option value="Doctorado">Doctorado</option>
+                                    <option value="Postgrado">Postgrado</option>
+                                    <option value="Tecnico">Técnico</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -346,7 +344,6 @@ export const ProfilePage = () => {
                                 password={userData.password}
                                 name="currentPassword"
                                 readonly={true}
-                                onchange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                             />
 
                             <CustomPasswordInput 

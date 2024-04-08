@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
@@ -24,6 +24,7 @@ export const NewCompany = () => {
 
     const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
     const [rncEmpresa, setRncEmpresa] = useState<number>();
+    const [logoEmpresa, setLogoEmpresa] = useState<string>('');
     const [fechaFundacion, setFechaFundacion] = useState<string>('');
     const [direccionEmpresa, setDireccionEmpresa] = useState<string>('');
     const [telefonoEmpresa, setTelefonoEmpresa] = useState<number>();
@@ -53,14 +54,15 @@ export const NewCompany = () => {
     const handleCreateCompany = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        if (nombreEmpresa === '' || rncEmpresa === undefined || fechaFundacion === '' || direccionEmpresa === '' || telefonoEmpresa === undefined || correoEmpresa === '') {
-            toast.error('Todos los campos son requeridos');
+        if (nombreEmpresa === '' || rncEmpresa === undefined || fechaFundacion === '' || direccionEmpresa === '' || telefonoEmpresa === undefined) {
+            toast.error('Llenas los campos requeridos');
         } else if (rncEmpresa.toString().length < 9 || rncEmpresa.toString().length > 13){
             toast.error('El RNC debe tener entre 9 y 13 digitos');
         } else {
             axios.post(`${import.meta.env.VITE_API_URL}/empresas/createCompany`, {
                 nombre_empresa: nombreEmpresa,
                 rnc_empresa: rncEmpresa,
+                logo_empresa: logoEmpresa,
                 fecha_fundacion: fechaFundacion,
                 direccion_empresa: direccionEmpresa,
                 numero_telefonico: telefonoEmpresa,
@@ -82,6 +84,15 @@ export const NewCompany = () => {
         }
     };
 
+    const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            // Obtenemos la ruta relativa del archivo
+            const relativePath = file.name;
+            setLogoEmpresa(relativePath);
+        }
+    };
+
     const gotoLogin = () => {
         navigate('/');
     };
@@ -98,7 +109,7 @@ export const NewCompany = () => {
 
                                     <Form.Text
                                         className='text-primary mb-4'
-                                        style={{ cursor: 'pointer' }}
+                                        style={{ cursor: 'pointer', fontSize: '1.3rem'}}
                                         onClick={gotoLogin}
                                     >
                                         <FaAngleLeft/> Volver
@@ -121,6 +132,16 @@ export const NewCompany = () => {
                                             onChange={(e) => setRncEmpresa(parseInt(e.target.value))}
                                         />
                                     </Form.Group>
+
+                                    <Form.Group className='mb-4 w-100'>
+                                    <Form.Label>Logo de la Empresa</Form.Label>
+                                    <Form.Control
+                                        type="file"
+                                        name="logo_empresa"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                    />
+                                </Form.Group>
 
                                     <Form.Group className='mb-4 w-100'>
                                         <Form.Label>Fecha fundación de la empresa</Form.Label>

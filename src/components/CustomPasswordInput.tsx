@@ -6,7 +6,7 @@ interface CustomPasswordInputProps {
     password: string;
     name: string;
     readonly: boolean;
-    onchange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    onchange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const CustomPasswordInput: FC<CustomPasswordInputProps> = ({nameLabel, password, name, readonly, onchange}) => {

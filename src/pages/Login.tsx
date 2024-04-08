@@ -64,6 +64,10 @@ export const Login = () => {
         navigate('/forget_password');
     };
 
+    const gotoRegister = () => {
+        navigate('/register');
+    };
+
     return (
         <Background> 
             <form onSubmit={handleLogin}>
@@ -102,11 +106,19 @@ export const Login = () => {
                                     </Button>
 
                                     <Form.Text
-                                        className='text-center text-primary'
+                                        className='text-center text-primary mb-3'
                                         style={{ cursor: 'pointer' }}
                                         onClick={gotoForgetPassword}
                                     >
                                         ¿Ha olvidado su contraseña?
+                                    </Form.Text>
+
+                                    <Form.Text
+                                        className='text-center text-primary'
+                                        style={{ cursor: 'pointer' }}
+                                        onClick={gotoRegister}
+                                    >
+                                        ¿No tienes una cuenta?, Crea una
                                     </Form.Text>
                                 </Card.Body>
                             </Card>
