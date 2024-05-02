@@ -16,17 +16,10 @@ interface CompanyDataProps {
     direccion_empresa: string;
     numero_telefonico: string;
     correo_empresa: string;
-    id_sector: number;
-}
-
-interface SectorEmpresaProps {
-    id_sector_empresa: number;
-    nombre_sector: string;
 }
 
 export const EditCompanyPage = () => {
     const [companyData, setCompanyData] = useState<CompanyDataProps>({} as CompanyDataProps);
-    const [sectores, setSectores] = useState<SectorEmpresaProps[]>([]);
     const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
 
     useEffect(() => {
@@ -43,27 +36,8 @@ export const EditCompanyPage = () => {
                 console.log(error);
             });
         };
-
-        const getSectors = async () => {
-            axios.get(`${import.meta.env.VITE_API_URL}/sector_empresa`)
-            .then((response) => {
-                setSectores(response.data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-        };
-
         getCompanyData();
-        getSectors();
     }, []);
-
-    const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const sector = sectores.find((sector) => sector.id_sector_empresa === parseInt(e.target.value));
-        if (sector) {
-            setSectores([sector]);
-        }
-    };
 
     const handleShowModalAceptarCancelar = () => {
         setShowModalAceptarCancelar(true);
@@ -90,7 +64,7 @@ export const EditCompanyPage = () => {
     };
 
     const handleFormSubmit = async () => {
-        if (companyData.nombre_empresa === '' || companyData.rnc_empresa === '' || companyData.direccion_empresa === '' || companyData.numero_telefonico === '' || companyData.id_sector === 0) {
+        if (companyData.nombre_empresa === '' || companyData.rnc_empresa === '' || companyData.direccion_empresa === '' || companyData.numero_telefonico === '') {
             toast.error('Llenar los campos requeridos');
         } else {
             axios.put(`${import.meta.env.VITE_API_URL}/empresas/updateCompany`, {
@@ -103,7 +77,6 @@ export const EditCompanyPage = () => {
                 numero_telefonico: companyData.numero_telefonico,
                 correo_empresa: companyData.correo_empresa,
                 id_director_general: localStorage.getItem('id'),
-                id_sector: companyData.id_sector
             })
             .then((response) => {
                 toast.success(`${response.data.message}`);
@@ -242,25 +215,6 @@ export const EditCompanyPage = () => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={6}>
-                            <Form.Group className='mb-4 w-100'>
-                                <Form.Label className="mt-3"><CustomAsterisk/> Seleccionar Sector al que pertenece la Empresa</Form.Label>
-                                <Form.Select onChange={handleSelect} value={companyData.id_sector}>
-                                    <option key="default" value="">Seleccione un sector</option>
-                                    {
-                                        sectores.map((sector) => (
-                                            <option 
-                                                key={sector.id_sector_empresa} 
-                                                value={sector.id_sector_empresa}
-                                            >
-                                                {sector.nombre_sector}
-                                            </option>
-                                        ))
-                                    }
-                                </Form.Select>
-                            </Form.Group>
-                        </Col>
-
                         <Col>
                             <Form.Group>
                                 <Form.Control

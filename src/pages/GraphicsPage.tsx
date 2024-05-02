@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState } from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
 import { CustomDownloadButton } from "../components/CustomDownloadButton";
@@ -6,6 +6,7 @@ import { CustomAsterisk } from '../components/CustomAsterisk';
 import { BarChart } from "../components/BarChart";
 import { PieChart } from "../components/PieChart";
 import { cantEmpleadosDepartamentos } from "../components/api/apiGraficas/cantEmpleadosDepartamentos";
+import { saveAs } from 'file-saver';
 import './styles/graphicsPage.css';
 
 interface ChartDataProps {
@@ -32,12 +33,10 @@ export const GraphicsPage = () => {
         ],
     });
 
-    const ref = useRef<HTMLCanvasElement>(null);
-
     const generateGraph = () => {
         switch (tipoGraficoSeleccionado) {
             case 'Gráfico de barras':
-                return <BarChart title="Gráfico de Barras" chartData={chartData} />;
+                return <BarChart id="grafico" title="Gráfico de Barras" chartData={chartData} />;
             case 'Gráfico circular':
                 return <PieChart title="Gráfico Circular" chartData={chartData} />;
             default:
@@ -75,14 +74,16 @@ export const GraphicsPage = () => {
         }
     };
 
-    const handleDownload = useCallback(() => {
-        if (ref.current) {
-            const link = document.createElement('a');
-            link.download = 'grafico.png';
-            link.href = ref.current.toDataURL("image/png");
-            link.click();
-        }
-    }, []);
+    const handleDownload = () => {
+        const canvasSave = document.getElementById('grafico') as HTMLCanvasElement;
+        const blob = new Blob([canvasSave?.toDataURL()], { type: 'image/png' });
+        saveAs(blob, 'grafico.png');
+
+        console.log({
+            canvasSave,
+            blob
+        })
+    };
 
     return (
         <Layout>
@@ -144,11 +145,12 @@ export const GraphicsPage = () => {
                         />
                     </Col>
 
-                    <Col md={12} className="mt-4 mb-2">
+                    {/* <Col md={12} className="mt-4 mb-2">
                         <div className="chart-container">
                             {generateGraph()}
                         </div>
-                    </Col>
+                    </Col> */}
+                    {generateGraph()}
                 </Row>
             </Container>
         </Layout>

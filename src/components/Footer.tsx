@@ -5,8 +5,6 @@ export const Footer = () => {
     return (
         <footer
         style={{
-            backgroundColor: '#e9ecef',
-            padding: '0.8rem',
             marginTop: 'auto',
             position: 'inherit', 
             bottom: 0, 
