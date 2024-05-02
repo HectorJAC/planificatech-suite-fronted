@@ -1,37 +1,22 @@
-import { useState } from 'react';
-import { Nav, Accordion } from 'react-bootstrap';
-import { FaAngleDown } from "react-icons/fa6";
+import { Accordion } from 'react-bootstrap';
 import './styles/sidebar.css';
+import { FC } from "react";
 
 interface SidebarSectionProps {
     section: string;
     children: React.ReactNode;
+    eventKey: string;
 }
 
-export const SidebarSection = ({ section, children }: SidebarSectionProps) => {
-    const [openSection, setOpenSection] = useState('');
-
-    const handleSectionClick = (section: string) => {
-        setOpenSection(openSection === section ? '' : section);
-    };
-
+export const SidebarSection:FC<SidebarSectionProps> = ({ section, children, eventKey }) => {
     return (
-        <Accordion>
-            <Nav.Link 
-                className='sidebar-button' 
-                onClick={() => handleSectionClick(section)}
-                active={openSection === section}
-            >
-                {section} <FaAngleDown />
-            </Nav.Link>
-            <Accordion.Collapse 
-                eventKey={section}
-                in={openSection === section}
-            >
-                <Nav className="flex-column">
+        <Accordion className="sidebar">
+            <Accordion.Item eventKey={eventKey}>
+                <Accordion.Header className="sidebar-button">{section}</Accordion.Header>
+                <Accordion.Body className="sidebar-subbutton">
                     {children}
-                </Nav>
-            </Accordion.Collapse>
+                </Accordion.Body>
+            </Accordion.Item>
         </Accordion>
     );
 };

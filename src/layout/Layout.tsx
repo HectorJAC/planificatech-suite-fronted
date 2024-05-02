@@ -11,6 +11,7 @@ interface LayoutProps {
 export const Layout = ({children}: LayoutProps) => {
 
     const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
+    const [nombreApellidoDirector, setNombreApellidoDirector] = useState<string>('');
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
@@ -26,11 +27,25 @@ export const Layout = ({children}: LayoutProps) => {
         });
     }, []);
 
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneral`, {
+            params: {
+                id_director_general: localStorage.getItem('id')
+            }
+        })
+        .then((response) => {
+            setNombreApellidoDirector(response.data.nombres + ' ' + response.data.apellidos);
+        })
+        .catch((error) => {
+            console.log(`${error.response.data.message}`);
+        });
+    }, []);
+
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', zIndex: 1, marginLeft: '200px', marginTop: '50px' }}>
             <Header 
-                companyName={`${nombreEmpresa}`} 
-                userName={`${localStorage.getItem('username')}`}
+                companyName={nombreEmpresa} 
+                userName={nombreApellidoDirector}
             />
             <div style={{ display: 'flex', flex: 1 }}>
                 <Sidebar />
