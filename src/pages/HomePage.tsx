@@ -2,29 +2,40 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { Container, Image } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
-import { getImageUrl } from "../components/helpers/getImageUrl";
-
-interface CompanyDataProps {
-    logo_empresa?: string;
-}
+import { getImageUrl } from "../helpers/getImageUrl";
+import { CompanyProps } from "../interfaces/companyInteface";
+import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
+import { CustomBasicModal } from "../components/CustomBasicModal";
 
 export const HomePage = () => {
 
-    const [companyData, setCompanyData] = useState<CompanyDataProps>();
-    
+    const [companyData, setCompanyData] = useState<CompanyProps>();
+    const [showModal, setShowModal] = useState(false);
+
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+        findCompanyByDirector()
+            .then((response) => {
+                setCompanyData(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
             params: {
-                id_director_general: localStorage.getItem('id')
+                id_empresa: companyData?.id_empresa
             }
         })
         .then((response) => {
-            setCompanyData(response.data);
+            console.log('departamentos empresa', response.data);
         })
         .catch((error) => {
             console.log(error);
+            setShowModal(true);
         });
-    }, []);
+    }, [companyData?.id_empresa]);
     
     return (
         <Layout>
@@ -37,6 +48,16 @@ export const HomePage = () => {
                     />
                 )}
             </Container>
+
+            <CustomBasicModal 
+                title="Su empresa no tiene departamentos"
+                body="¿Desea crear un departamento ahora o hacerlo mas tarde?"
+                secondaryButton="Crear departamento mas tarde"
+                primaryButton="Crear departamento ahora"
+                showModal={showModal}
+                setShowModal={() => setShowModal(false)}
+                onClick={() => console.log('Crear departamento ahora')}
+            />
         </Layout>
     );
 };

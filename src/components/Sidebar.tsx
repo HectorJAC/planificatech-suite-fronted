@@ -1,13 +1,20 @@
 import { Nav, Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import './styles/sidebar.css';
+import { FC } from "react";
+import { useUI } from "../context/useUI";
 
-export const Sidebar = () => {
+export const Sidebar:FC = () => {
     
     const navigate = useNavigate();
+    const { state, dispatch } = useUI();
+
+    const handleSectionClick = (section: string) => {
+        dispatch({ type: 'SET_OPEN_SECTION', payload: state.openSection === section ? null : section });
+    };
 
     return (
-        <Accordion className="sidebar">
+        <Accordion className="sidebar" activeKey={state.openSection} onSelect={(eventKey) => handleSectionClick(eventKey as string)}>
             <Accordion.Item eventKey="0">
                 <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
                 <Accordion.Body className="sidebar-body">
@@ -57,9 +64,6 @@ export const Sidebar = () => {
             <Accordion.Item eventKey="4">
                 <Accordion.Header className="sidebar-header">Empleados</Accordion.Header>
                 <Accordion.Body className="sidebar-body">
-                    <Nav.Link onClick={() => navigate('/puestos')}>Creación/Consulta de Puestos</Nav.Link>
-                </Accordion.Body>
-                <Accordion.Body className="sidebar-body">
                     <Nav.Link>Crear Empleados</Nav.Link>
                 </Accordion.Body>
                 <Accordion.Body className="sidebar-body">
@@ -104,12 +108,26 @@ export const Sidebar = () => {
             </Accordion.Item>
 
             <Accordion.Item eventKey="8">
+                <Accordion.Header className="sidebar-header">Reportes</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Reporte</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="9">
                 <Accordion.Header className="sidebar-header">Utilidades</Accordion.Header>
                 <Accordion.Body className="sidebar-body">
-                    <Nav.Link>Mis Notas</Nav.Link>
+                    <Nav.Link onClick={() => navigate('/my_notes')}>Mis Notas</Nav.Link>
                 </Accordion.Body>
                 <Accordion.Body className="sidebar-body">
                     <Nav.Link>Calendario</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="10">
+                <Accordion.Header className="sidebar-header">Configuracion</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/puestos')}>Creación/Consulta de Puestos</Nav.Link>
                 </Accordion.Body>
             </Accordion.Item>
 

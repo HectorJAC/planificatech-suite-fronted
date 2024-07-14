@@ -18,11 +18,7 @@ export const PuestosPage = () => {
     const [searchResults, setSearchResults] = useState<PuestoProps[]>([]);
     const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [puestoData, setPuestoData] = useState({
-        nombre_puesto: '',
-        descripcion_puesto: '',
-        estado: 'ACTIVO'
-    });
+    const [puestoData, setPuestoData] = useState({} as PuestoProps);
 
     useEffect(() => {
         axios.get(`${import.meta.env.VITE_API_URL}/puestos/getPuestos`)
@@ -146,9 +142,9 @@ export const PuestosPage = () => {
                             <Form.Group controlId="formBasicCheckbox">
                                 <Form.Check 
                                     type="checkbox" 
-                                    label="Puestos Inactivos" 
+                                    label="Puestos Inactivos"
                                     checked={isCheckboxChecked}
-                                    onClick={
+                                    onChange={
                                         () => {
                                             setIsCheckboxChecked(!isCheckboxChecked);
                                             handlePuestosInactivos();

@@ -14,6 +14,8 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
+import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
+import { getDirectorGeneralById } from '../api/director_general/getDIrectorGeneralById';
 
 export const NewCompany = () => {
 
@@ -27,11 +29,7 @@ export const NewCompany = () => {
     const [nombreApellidoDirector, setNombreApellidoDirector] = useState<string>('');
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneral`, {
-            params: {
-                id_director_general: localStorage.getItem('id')
-            }
-        })
+        getDirectorGeneralById()
         .then((response) => {
             setNombreApellidoDirector(response.data.nombres + ' ' + response.data.apellidos);
         })
@@ -58,7 +56,7 @@ export const NewCompany = () => {
                 direccion_empresa: direccionEmpresa,
                 numero_telefonico: telefonoEmpresa,
                 correo_empresa: correoEmpresa,
-                id_director_general: localStorage.getItem('id'),
+                id_director_general: getIdDirectorGeneral(),
                 estado: 'ACTIVO'
             })
             .then((response) => {

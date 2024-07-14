@@ -1,50 +1,39 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import axios from "axios";
 import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
-import { getImageUrl } from "../components/helpers/getImageUrl";
-import { ModalAceptarCancelar } from "../components/ModalAceptarCancelar";
-
-interface CompanyDataProps {
-    id_empresa: number;
-    nombre_empresa: string;
-    rnc_empresa: string;
-    logo_empresa: string;
-    fecha_fundacion: string;
-    direccion_empresa: string;
-    numero_telefonico: string;
-    correo_empresa: string;
-}
+import { getImageUrl } from "../helpers/getImageUrl";
+import { CompanyProps } from "../interfaces/companyInteface";
+import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
+import { CustomBasicModal } from "../components/CustomBasicModal";
 
 export const EditCompanyPage = () => {
-    const [companyData, setCompanyData] = useState<CompanyDataProps>({} as CompanyDataProps);
-    const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
+    const [companyData, setCompanyData] = useState<CompanyProps>({} as CompanyProps);
+    const [showModal, setShowModal] = useState(false);
+
+    const getCompanyData = () => {
+        findCompanyByDirector()
+        .then((response) => {
+            setCompanyData(response);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+    };
 
     useEffect(() => {
-        const getCompanyData = async () => {
-            axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
-                params: {
-                    id_director_general: localStorage.getItem('id')
-                }
-            })
-            .then(response => {
-                setCompanyData(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
-        };
         getCompanyData();
     }, []);
 
     const handleShowModalAceptarCancelar = () => {
-        setShowModalAceptarCancelar(true);
+        setShowModal(true);
     };
 
     const handleCloseModalAceptarCancelar = () => {
-        setShowModalAceptarCancelar(false);
+        setShowModal(false);
     };
 
     // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -76,7 +65,7 @@ export const EditCompanyPage = () => {
                 direccion_empresa: companyData.direccion_empresa,
                 numero_telefonico: companyData.numero_telefonico,
                 correo_empresa: companyData.correo_empresa,
-                id_director_general: localStorage.getItem('id'),
+                id_director_general: getIdDirectorGeneral(),
             })
             .then((response) => {
                 toast.success(`${response.data.message}`);
@@ -86,27 +75,24 @@ export const EditCompanyPage = () => {
             });
 
             // Cerrar el modal
-            setShowModalAceptarCancelar(false);
+            setShowModal(false);
 
             // Volver a cargar los datos de la empresa
-            axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
-                params: {
-                    id_director_general: localStorage.getItem('id')
-                }
-            })
-            .then(response => {
-                setCompanyData(response.data);
-            })
-            .catch(error => {
-                console.log(error);
-            });
+            getCompanyData();
         }
     };
 
     return (
         <Layout>
             <Container>
-                <h1>Editar empresa</h1>
+                <Row>
+                    <Col>
+                        <h1 className="mt-3 mb-4">
+                            Editar Empresa
+                        </h1>
+                    </Col>
+                </Row>
+
                 <Form>
                     <Row>
                         <Col>
@@ -229,12 +215,14 @@ export const EditCompanyPage = () => {
                     <Button onClick={handleShowModalAceptarCancelar} className="mb-3">Guardar cambios</Button>
                 </Form>
 
-                <ModalAceptarCancelar 
-                    show={showModalAceptarCancelar} 
-                    onHide={handleCloseModalAceptarCancelar} 
-                    onAceptar={handleFormSubmit} 
-                    titulo="Guardar Cambios" 
-                    mensaje="¿Estás seguro de guardar los cambios realizados?"
+                <CustomBasicModal 
+                    title="Guardar Cambios"
+                    body="¿Estás seguro de guardar los cambios realizados?"
+                    secondaryButton="Cancelar"
+                    primaryButton="Aceptar"
+                    showModal={showModal}
+                    setShowModal={handleCloseModalAceptarCancelar}
+                    onClick={handleFormSubmit}
                 />
             </Container>
             <ToastContainer />

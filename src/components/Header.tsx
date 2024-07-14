@@ -5,18 +5,28 @@ import { FaUser } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { SlLogout } from "react-icons/sl";
 import { FaNoteSticky } from "react-icons/fa6";
-import { NotesModal } from './NotesModal';
 import { useState } from 'react';
+import { NotesModal } from './NotesModal';
+import { ToastContainer } from "react-toastify";
+import { useUI } from '../context/useUI';
+import { CustomBasicModal } from './CustomBasicModal';
 
 interface HeaderProps {
-    companyName: string;
-    userName: string;
+    companyName: string | undefined;
+    userName: string | undefined;
 }
 
 export const Header = ({ companyName, userName }: HeaderProps) => {
 
     const navigate = useNavigate();
+
     const [showModal, setShowModal] = useState(false);
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const { dispatch } = useUI();
+
+    const handleCloseAllSection = (section:string) => {
+        dispatch({ type: 'SET_CLOSE_SECTION', payload: section });
+    }
 
     const openNotesModal = () => {
         setShowModal(true);
@@ -24,11 +34,12 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
 
     const goToHome = () => {
         navigate('/home');
+        handleCloseAllSection('0');
     };
 
     const goToProfile = () => {
         navigate('/profile');
-    }
+    };
 
     const handleLogout = () => {
         // Eliminar el token de acceso del almacenamiento local
@@ -94,7 +105,7 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                                 <CustomTooltip
                                     text="Cerrar sesión"
                                     placement="bottom"
-                                    onClick={handleLogout}
+                                    onClick={() => setShowLogoutModal(true)}
                                 >
                                     <SlLogout size={20} />
                                 </CustomTooltip>
@@ -107,6 +118,16 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                 showModal={showModal}
                 setShowModal={setShowModal}
             />
+            <CustomBasicModal 
+                title="Cerrar Sesión"
+                body="¿Desea cerrar sesión?"
+                secondaryButton="Cancelar"
+                primaryButton="Aceptar"
+                showModal={showLogoutModal}
+                setShowModal={() => setShowLogoutModal(false)}
+                onClick={handleLogout}
+            />
+            <ToastContainer />
         </>
     );
 };

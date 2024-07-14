@@ -13,6 +13,8 @@ import {
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
+import { planificaTechApi } from '../api/baseApi';
+import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
 
 export const Login = () => {
     
@@ -46,9 +48,9 @@ export const Login = () => {
                         localStorage.setItem('id', response.data.id_director_general);
     
                         // Revisar si el director general tiene una empresa creada
-                        axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+                        planificaTechApi.get('empresas/findCompanyByDirector', {
                             params: {
-                                id_director_general: response.data.id_director_general
+                                id_director_general: getIdDirectorGeneral()
                             }
                         })
                         .then((response) => {

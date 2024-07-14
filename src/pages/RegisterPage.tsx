@@ -50,7 +50,6 @@ export const RegisterPage = () => {
             axios.get(`${import.meta.env.VITE_API_URL}/empresas/findAllCompany`)
             .then((response) => {
                 setEmpresa(response.data);
-                console.log(response.data);
             })
             .catch((error) => {
                 toast.error(`${error.response.data.message}`);
@@ -260,6 +259,19 @@ export const RegisterPage = () => {
                                             onChange={(e) => setCorreoElectronico(e.target.value)} 
                                         />
                                     </Form.Group>
+
+                                    {
+                                        tipoUsuario === '2' && (
+                                            <Form.Group className='mb-4'>
+                                                <Form.Label><CustomAsterisk/> Fecha de Ingreso a la Empresa</Form.Label>
+                                                <Form.Control 
+                                                    type='date'
+                                                    value={fechaIngresoEmpresa}
+                                                    onChange={(e) => setFechaIngresoEmpresa(e.target.value)} 
+                                                />
+                                            </Form.Group>
+                                        )
+                                    }
                                 </Col>
 
                                 <Col md={6}>
@@ -361,19 +373,6 @@ export const RegisterPage = () => {
                                                         ))
                                                     }
                                                 </Form.Select>
-                                            </Form.Group>
-                                        )
-                                    }
-
-                                    {
-                                        tipoUsuario === '2' && (
-                                            <Form.Group className='mb-4'>
-                                                <Form.Label><CustomAsterisk/> Fecha de Ingreso a la Empresa</Form.Label>
-                                                <Form.Control 
-                                                    type='date'
-                                                    value={fechaIngresoEmpresa}
-                                                    onChange={(e) => setFechaIngresoEmpresa(e.target.value)} 
-                                                />
                                             </Form.Group>
                                         )
                                     }
