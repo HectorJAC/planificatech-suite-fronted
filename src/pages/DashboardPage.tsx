@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Table } from "react-bootstrap";
-import axios from "axios";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js/auto";
 import { BarChart } from "../components/BarChart";
 import { Layout } from "../layout/Layout";
+import { planificaTechApi } from "../api/baseApi";
+import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
+import { CompanyProps } from "../interfaces/companyInteface";
 
 interface ChartDataProps {
     departamento: string;
@@ -35,28 +37,24 @@ export const DashboardPage = () => {
         ],
     });
 
-    const [idEmpresa, setIdEmpresa] = useState<number>();
+    const [companyData, setCompanyData] = useState<CompanyProps>();
     const [employees, setEmployees] = useState<EmployeeDataProps>();
     const [page, setPage] = useState(1);
     const [limit, setLimit] = useState(4);
 
     useEffect(() => {
         const getCompanyData = async () => {
-            axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
-                params: {
-                    id_director_general: localStorage.getItem('id')
-                }
+            findCompanyByDirector()
+            .then((response) => {
+                setCompanyData(response);
             })
-            .then(response => {
-                setIdEmpresa(response.data.id_empresa);
-            })
-            .catch(error => {
+            .catch((error) => {
                 console.log(error);
             });
         };
 
         const getGraphData = async () => {
-            axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getEmpleadosPorDepartamento`)
+            planificaTechApi.get(`${import.meta.env.VITE_API_URL}/departamentos/getEmpleadosPorDepartamento`)
             .then((response) => {
                 setChartData({
                     labels: response.data.map((data: ChartDataProps) => data.departamento),
@@ -75,9 +73,9 @@ export const DashboardPage = () => {
         };
 
         const getEmployees = async (page:number, limit:number) => {
-            axios.get(`${import.meta.env.VITE_API_URL}/empleados/getAllEmployees`, {
+            planificaTechApi.get(`${import.meta.env.VITE_API_URL}/empleados/getAllEmployees`, {
                 params: {
-                    id_empresa: idEmpresa,
+                    id_empresa: companyData?.id_empresa,
                     page: page,
                     limit: limit,
                 }
@@ -93,7 +91,7 @@ export const DashboardPage = () => {
         getCompanyData();
         getGraphData();
         getEmployees(page, limit);
-    }, [page, limit, idEmpresa]);
+    }, [page, limit, companyData?.id_empresa]);
 
     return (
         <Layout>

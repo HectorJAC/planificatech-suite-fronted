@@ -4,13 +4,15 @@ import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
-import { Spinner } from "../components/Spinner";
-import { ModalAceptarCancelar } from "../components/ModalAceptarCancelar";
 import { CustomPasswordInput } from "../components/CustomPasswordInput";
+import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { CustomBasicModal } from "../components/CustomBasicModal";
+import { getDirectorGeneralById } from "../api/director_general/getDIrectorGeneralById";
+import { getUserById } from "../api/usuarios/getUserById";
+import { handleDataNull } from "../helpers/handleDataNull";
+import { formatterDate } from "../helpers/formatters";
 
 interface UserDataProps {
-    username: string;
-    password: string;
     nombres: string;
     apellidos: string;
     cedula: number;
@@ -23,46 +25,47 @@ interface UserDataProps {
     nivel_academico: string;
 }
 
+interface UserNamePassowrdProps {
+    username: string;
+    password: string;
+}
+
 export const ProfilePage = () => {
     
+    const [namePassword, setNamePassword] = useState<UserNamePassowrdProps>({} as UserNamePassowrdProps);
     const [userData, setUserData] = useState<UserDataProps>({} as UserDataProps);
     const [editMode, setEditMode] = useState(false);
     const [showModal, setShowModal] = useState(false);
-    const [showModalAceptarCancelar, setShowModalAceptarCancelar] = useState(false);
+    const [showConfirmModal, setShowConfirmModal] = useState(false);
+    const [showCancelModal, setShowCancelModal] = useState(false);
     const [passwordData, setPasswordData] = useState({
         newPassword: '',
         repeatPassword: ''
     });
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneral`, {
-            params: {
-                id_director_general: localStorage.getItem('id')
-            }
-        })
-        .then((response) => {
-            setUserData(response.data);
-        })
-        .catch((error) => {
-            console.log(error);
-        });
+        getDirectorGeneralById()
+            .then((response) => {
+                setUserData(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+        getUserById()
+            .then((response) => {
+                setNamePassword(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     }, []);
-
-    // Funcion por si uno de los datos del usuario es null que aparezca en el input como vacio
-    const handleNull = (data: string | number) => {
-        if (data === null) {
-            return '';
-        } else {
-            return data;
-        }
-    };
 
     const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (passwordData.newPassword === '' || passwordData.newPassword === '') {
             toast.error('Todos los campos son requeridos');
-        } else if (passwordData.newPassword === userData.password) {
+        } else if (passwordData.newPassword === namePassword.password) {
             toast.error('La nueva contraseña no puede ser igual a la actual');
         } else if (passwordData.newPassword !== passwordData.newPassword) {
             toast.error('Las contraseñas no coinciden');
@@ -77,8 +80,8 @@ export const ProfilePage = () => {
 
     const handleSave = () => {
         if (
-            userData.username === '' || 
-            userData.password === '' || 
+            namePassword.username === '' || 
+            namePassword.password === '' || 
             userData.nombres === '' || 
             userData.apellidos === '' || 
             userData.cedula === Number('') || 
@@ -86,12 +89,12 @@ export const ProfilePage = () => {
             userData.direccion_residencia === '' || 
             userData.numero_telefonico === Number('')
         ) {
-            toast.error('Llenas los campos requeridos');
+            toast.error('Llenar los campos requeridos');
         } else {
             axios.put(`${import.meta.env.VITE_API_URL}/director_general/updateDirectorGeneral`, {
-                id_director_general: localStorage.getItem('id'),
-                username: userData.username,
-                password: userData.password,
+                id_director_general: getIdDirectorGeneral(),
+                username: namePassword.username,
+                password: namePassword.password,
                 nombres: userData.nombres,
                 apellidos: userData.apellidos,
                 cedula: userData.cedula,
@@ -114,16 +117,12 @@ export const ProfilePage = () => {
     };
     
     const handleCancel = () => {
-        setShowModalAceptarCancelar(false);
+        setShowCancelModal(false);
         setEditMode(false);
         // Hacer una peticion get para traer los datos del usuario
-        axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneral`, {
-            params: {
-                id_director_general: localStorage.getItem('id')
-            }
-        })
+        getDirectorGeneralById()
         .then((response) => {
-            setUserData(response.data);
+            setUserData(response);
         })
         .catch((error) => {
             console.log(error);
@@ -147,22 +146,26 @@ export const ProfilePage = () => {
         });
     };
 
-    const handleShowModalAceptarCancelar = () => {
-        setShowModalAceptarCancelar(true);
+    const handleShowConfirmModal = () => {
+        setShowConfirmModal(true);
     };
 
-    const handleCloseModalAceptarCancelar = () => {
-        setShowModalAceptarCancelar(false);
+    const handleCloseConfirmModal = () => {
+        setShowConfirmModal(false);
+    };
+
+    const handleShowCancelModal = () => {
+        setShowCancelModal(true);
+    };
+
+    const handleCloseCancelModal = () => {
+        setShowCancelModal(false);
     };
 
     return (
         <Layout>
             <Container>
-                {
-                    Object.keys(userData).length === 0 ? (
-                        <Spinner />
-                    ) : null
-                }
+                
                 <h1 className="fw-bold text-black my-3">Perfil</h1>
                 <Row>
                     <Col md={6}>
@@ -172,7 +175,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="text" 
                                     disabled 
-                                    value={handleNull(userData.username)}
+                                    value={handleDataNull(namePassword.username)}
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, username: e.target.value }))}
                                 />
                             </Form.Group>
@@ -182,7 +185,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="text" 
                                     disabled={!editMode}
-                                    value={handleNull(userData.nombres)} 
+                                    value={handleDataNull(userData.nombres)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, nombres: e.target.value }))}
                                 />
                             </Form.Group>
@@ -192,7 +195,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="number" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.cedula)} 
+                                    value={handleDataNull(userData.cedula)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, cedula: Number(e.target.value) }))}
                                 />
                             </Form.Group>
@@ -202,7 +205,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="text" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.lugar_nacimiento)} 
+                                    value={handleDataNull(userData.lugar_nacimiento)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, lugar_nacimiento: e.target.value }))}
                                 />
                             </Form.Group>
@@ -211,7 +214,7 @@ export const ProfilePage = () => {
                                 <Form.Label>Estado Civil</Form.Label>
                                 <Form.Select 
                                     disabled={!editMode}
-                                    value={handleNull(userData.estado_civil)}
+                                    value={handleDataNull(userData.estado_civil)}
                                 >
                                     <option value="Soltero(a)">Soltero(a)</option>
                                     <option value="Casado(a)">Casado(a)</option>
@@ -224,7 +227,7 @@ export const ProfilePage = () => {
                                 <Form.Label>Nivel Académico</Form.Label>
                                 <Form.Select 
                                     disabled={!editMode}
-                                    value={handleNull(userData.nivel_academico)}
+                                    value={handleDataNull(userData.nivel_academico)}
                                 >
                                     <option value="Primario">Primario</option>
                                     <option value="Secundario">Secundario(Bachillerato)</option>
@@ -245,11 +248,11 @@ export const ProfilePage = () => {
                                     <Button onClick={handleEdit}>Modo Edición</Button>
                                 ) : (
                                     <>
-                                        <Button onClick={handleSave} variant="primary">
+                                        <Button onClick={handleShowConfirmModal} variant="primary">
                                             Guardar
                                         </Button>
 
-                                        <Button onClick={handleShowModalAceptarCancelar} variant="secondary">
+                                        <Button onClick={handleShowCancelModal} variant="secondary">
                                             Cancelar
                                         </Button>
                                     </>
@@ -266,7 +269,7 @@ export const ProfilePage = () => {
                                     <Form.Control 
                                         type='password'
                                         disabled
-                                        value={handleNull(userData.password)}
+                                        value={handleDataNull(namePassword.password)}
                                     />
                                     <Button 
                                         variant="secondary" 
@@ -283,7 +286,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="text" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.apellidos)} 
+                                    value={handleDataNull(userData.apellidos)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, apellidos: e.target.value }))}
                                 />
                             </Form.Group>
@@ -291,9 +294,10 @@ export const ProfilePage = () => {
                             <Form.Group className="mb-3">
                                 <Form.Label><CustomAsterisk/> Fecha de Nacimiento</Form.Label>
                                 <Form.Control 
-                                    type="date" 
+                                    type="date"
+                                    placeholder="dd-mm-yyyy"  
                                     disabled={!editMode} 
-                                    value={handleNull(userData.fecha_nacimiento)} 
+                                    value={formatterDate(userData.fecha_nacimiento)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, fecha_nacimiento: e.target.value }))}
                                 />
                             </Form.Group>
@@ -303,7 +307,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="text" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.direccion_residencia)} 
+                                    value={handleDataNull(userData.direccion_residencia)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, direccion_residencia: e.target.value }))}
                                 />
                             </Form.Group>
@@ -313,7 +317,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="number" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.numero_telefonico)} 
+                                    value={handleDataNull(userData.numero_telefonico)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, numero_telefonico: Number(e.target.value) }))}
                                 />
                             </Form.Group>
@@ -323,7 +327,7 @@ export const ProfilePage = () => {
                                 <Form.Control 
                                     type="email" 
                                     disabled={!editMode} 
-                                    value={handleNull(userData.correo)} 
+                                    value={handleDataNull(userData.correo)} 
                                     onChange={(e) => setUserData(prevState => ({ ...prevState, correo: e.target.value }))}
                                 />
                             </Form.Group>
@@ -341,7 +345,7 @@ export const ProfilePage = () => {
 
                             <CustomPasswordInput
                                 nameLabel="Contraseña Actual" 
-                                password={userData.password}
+                                password={namePassword.password}
                                 name="currentPassword"
                                 readonly={true}
                             />
@@ -369,12 +373,24 @@ export const ProfilePage = () => {
                         </Modal.Footer>
                     </form>
                 </Modal>
-                <ModalAceptarCancelar 
-                    show={showModalAceptarCancelar} 
-                    onHide={handleCloseModalAceptarCancelar} 
-                    onAceptar={handleCancel} 
-                    titulo="Cancelar" 
-                    mensaje="¿Estás seguro de cancelar la operación?"
+                <CustomBasicModal 
+                    title="Confirmación"
+                    body="¿Estás seguro que desea guardar los cambios?"
+                    secondaryButton="Cancelar"
+                    primaryButton="Aceptar"
+                    showModal={showConfirmModal}
+                    setShowModal={handleCloseConfirmModal}
+                    onClick={handleSave}
+                />
+
+                <CustomBasicModal 
+                    title="Cancelar"
+                    body="¿Estás seguro de cancelar la operación?"
+                    secondaryButton="Cancelar"
+                    primaryButton="Aceptar"
+                    showModal={showCancelModal}
+                    setShowModal={handleCloseCancelModal}
+                    onClick={handleCancel}
                 />
             </Container>
             <ToastContainer />

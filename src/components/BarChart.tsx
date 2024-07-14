@@ -1,6 +1,7 @@
 import { Bar } from "react-chartjs-2";
 
 interface BarChartProps {
+    id?: string;
     title: string;
     chartData: {
         labels: string[];
@@ -12,12 +13,13 @@ interface BarChartProps {
     };
 }
 
-export const BarChart: React.FC<BarChartProps> = ({ title, chartData }) => {
+export const BarChart: React.FC<BarChartProps> = ({ id, title, chartData }) => {
     return (
         <div className="chart-container">
             <Bar
                 width={600}
                 height={500}
+                id={id}
                 data={chartData}
                 options={{
                     plugins: {

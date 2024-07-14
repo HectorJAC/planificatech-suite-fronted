@@ -13,6 +13,8 @@ import {
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
+import { planificaTechApi } from '../api/baseApi';
+import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
 
 export const Login = () => {
     
@@ -31,30 +33,57 @@ export const Login = () => {
                 username: username,
                 password: password
             })
-            .then(response => {
+            .then((response) => {
                 localStorage.setItem('accesToken', response.data.accessToken);
                 localStorage.setItem('username', response.data.username);
-                localStorage.setItem('id', response.data.id_director_general);
-                // Llamar a la api para que revise si el usuario tiene una empresa, esto mediante el id_director_general
-                axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
-                    params: {
-                        id_director_general: response.data.id_director_general
-                    }
-                })
-                .then(response => {
-                    toast.success(`Bienvenido a ${response.data.nombre_empresa}`);
-                    setTimeout(() => {
-                        navigate('/home');
-                    }, 2000);
-                })
-                .catch(error => {
-                    toast.info(`${error.response.data.message}`);
-                    setTimeout(() => {
-                        navigate('/new_company');
-                    }, 2000);
-                });
+                localStorage.setItem('id_usuario', response.data.id_usuario);
+
+                if (response.data.tipo_usuario === '1') {
+                    axios.get(`${import.meta.env.VITE_API_URL}/director_general/getDirectorGeneralByUserId`, {
+                        params: {
+                            id_usuario: response.data.id_usuario
+                        }
+                    })
+                    .then((response) => {
+                        localStorage.setItem('id', response.data.id_director_general);
+    
+                        // Revisar si el director general tiene una empresa creada
+                        planificaTechApi.get('empresas/findCompanyByDirector', {
+                            params: {
+                                id_director_general: getIdDirectorGeneral()
+                            }
+                        })
+                        .then((response) => {
+                            toast.success(`Bienvenido a ${response.data.nombre_empresa}`);
+                            setTimeout(() => {
+                                navigate('/home');
+                            }, 2000);
+                        })
+                        .catch((error) => {
+                            toast.info(`${error.response.data.message}`);
+                            setTimeout(() => {
+                                navigate('/new_company');
+                            }, 2000);
+                        });
+                    })
+                    .catch((error) => {
+                        toast.error(`${error.response.data.message}`);
+                    });
+                } else if (response.data.tipo_usuario === '2') {
+                    axios.get(`${import.meta.env.VITE_API_URL}/gerentes/getGerenteByUserId`, {
+                        params: {
+                            id_usuario: localStorage.getItem('id_usuario')
+                        }
+                    })
+                    .then((response) => {
+                        localStorage.setItem('id', response.data.id_gerente);
+                    })
+                    .catch((error) => {
+                        toast.error(`${error.response.data.message}`);
+                    });
+                }
             })
-            .catch(error => {
+            .catch((error) => {
                 toast.error(`${error.response.data.message}`);
             });
         }
@@ -64,7 +93,7 @@ export const Login = () => {
         navigate('/forget_password');
     };
 
-    const gotoRegister = () => {
+    const gotoRegisterUser = () => {
         navigate('/register');
     };
 
@@ -116,7 +145,7 @@ export const Login = () => {
                                     <Form.Text
                                         className='text-center text-primary'
                                         style={{ cursor: 'pointer' }}
-                                        onClick={gotoRegister}
+                                        onClick={gotoRegisterUser}
                                     >
                                         ¿No tienes una cuenta?, Crea una
                                     </Form.Text>

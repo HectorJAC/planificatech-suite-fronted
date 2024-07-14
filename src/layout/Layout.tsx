@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
+import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { planificaTechApi } from "../api/baseApi";
+import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
+import { CompanyProps } from "../interfaces/companyInteface";
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -10,27 +13,38 @@ interface LayoutProps {
 
 export const Layout = ({children}: LayoutProps) => {
 
-    const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
+    const [companyData, setCompanyData] = useState<CompanyProps>();
+    const [nombreApellidoDirector, setNombreApellidoDirector] = useState<string>('');
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/empresas/findCompanyByDirector`, {
+        findCompanyByDirector()
+            .then((response) => {
+                setCompanyData(response);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    }, []);
+
+    useEffect(() => {
+        planificaTechApi.get('director_general/getDirectorGeneral', {
             params: {
-                id_director_general: localStorage.getItem('id')
+                id_director_general: getIdDirectorGeneral()
             }
         })
-        .then(response => {
-            setNombreEmpresa(response.data.nombre_empresa);
+        .then((response) => {
+            setNombreApellidoDirector(response.data.nombres + ' ' + response.data.apellidos);
         })
-        .catch(error => {
-            console.log(error);
+        .catch((error) => {
+            console.log(`${error.response.data.message}`);
         });
     }, []);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', zIndex: 1, marginLeft: '200px', marginTop: '50px' }}>
             <Header 
-                companyName={`${nombreEmpresa}`} 
-                userName={`${localStorage.getItem('username')}`}
+                companyName={companyData?.nombre_empresa} 
+                userName={nombreApellidoDirector}
             />
             <div style={{ display: 'flex', flex: 1 }}>
                 <Sidebar />

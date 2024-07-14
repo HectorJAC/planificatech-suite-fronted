@@ -1,56 +1,136 @@
-import { Nav } from "react-bootstrap";
+import { Nav, Accordion } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { SidebarSection } from "./SidebarSection";
 import './styles/sidebar.css';
+import { FC } from "react";
+import { useUI } from "../context/useUI";
 
-export const Sidebar = () => {
+export const Sidebar:FC = () => {
     
     const navigate = useNavigate();
+    const { state, dispatch } = useUI();
+
+    const handleSectionClick = (section: string) => {
+        dispatch({ type: 'SET_OPEN_SECTION', payload: state.openSection === section ? null : section });
+    };
 
     return (
-        <div className="sidebar">
-            <SidebarSection section="Dashboard">
-                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/dashboard')}>Dashboard</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Empresas">
-                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/edit_company')}>Editar Empresa</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Empresa</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Empresa</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Departamentos">
-                <Nav.Link className="sidebar-subbutton">Crear Departamentos</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Departamentos</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Departamentos</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Gerentes">
-                <Nav.Link className="sidebar-subbutton">Crear Gerentes</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Gerentes</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Departamentos</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Empleados">
-                <Nav.Link 
-                    className="sidebar-subbutton" 
-                    onClick={() => navigate('/puestos')}
-                >
-                    Creación/Consulta de Puestos
-                </Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Crear Empleados</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Empleados</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Empleados</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Proyectos">
-                <Nav.Link className="sidebar-subbutton">Crear Proyectos</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Proyectos</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Proyectos</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Planes">
-                <Nav.Link className="sidebar-subbutton">Crear Planes</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Consultas Planes</Nav.Link>
-                <Nav.Link className="sidebar-subbutton">Gráficas Planes</Nav.Link>
-            </SidebarSection>
-            <SidebarSection section="Gráficas">
-                <Nav.Link className="sidebar-subbutton" onClick={() => navigate('/graphics')}>Generar Gráficas</Nav.Link>
-            </SidebarSection>
-        </div>
+        <Accordion className="sidebar" activeKey={state.openSection} onSelect={(eventKey) => handleSectionClick(eventKey as string)}>
+            <Accordion.Item eventKey="0">
+                <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/dashboard')}>Dashboard</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="1">
+                <Accordion.Header className="sidebar-header">Empresas</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/edit_company')}>Editar Empresa</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultar Empresa</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Empresa</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="2">
+                <Accordion.Header className="sidebar-header">Departamentos</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Departamento</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultas Departamento</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Departamento</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="3">
+                <Accordion.Header className="sidebar-header">Gerentes</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Gerentes</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultas Gerentes</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Gerentes</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="4">
+                <Accordion.Header className="sidebar-header">Empleados</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Empleados</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultas Empleados</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Empleados</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="5">
+                <Accordion.Header className="sidebar-header">Proyectos</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Proyectos</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultas Proyectos</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Proyectos</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="6">
+                <Accordion.Header className="sidebar-header">Planes</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Planes</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Consultas Planes</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Gráficas Planes</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="7">
+                <Accordion.Header className="sidebar-header">Gráficas</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/graphics')}>Generar Gráficas</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="8">
+                <Accordion.Header className="sidebar-header">Reportes</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Crear Reporte</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="9">
+                <Accordion.Header className="sidebar-header">Utilidades</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/my_notes')}>Mis Notas</Nav.Link>
+                </Accordion.Body>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link>Calendario</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+            <Accordion.Item eventKey="10">
+                <Accordion.Header className="sidebar-header">Configuracion</Accordion.Header>
+                <Accordion.Body className="sidebar-body">
+                    <Nav.Link onClick={() => navigate('/puestos')}>Creación/Consulta de Puestos</Nav.Link>
+                </Accordion.Body>
+            </Accordion.Item>
+
+        </Accordion>
     );
 };
