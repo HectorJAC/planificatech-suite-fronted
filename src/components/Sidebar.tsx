@@ -38,7 +38,7 @@ export const Sidebar:FC = () => {
             <Accordion.Item eventKey="2">
                 <Accordion.Header className="sidebar-header">Departamentos</Accordion.Header>
                 <Accordion.Body className="sidebar-body">
-                    <Nav.Link>Crear Departamento</Nav.Link>
+                    <Nav.Link onClick={() => navigate('/create_department')}>Crear Departamento</Nav.Link>
                 </Accordion.Body>
                 <Accordion.Body className="sidebar-body">
                     <Nav.Link>Consultas Departamento</Nav.Link>

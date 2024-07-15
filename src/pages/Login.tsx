@@ -77,6 +77,26 @@ export const Login = () => {
                     })
                     .then((response) => {
                         localStorage.setItem('id', response.data.id_gerente);
+                        
+                        // Revisar si el gerente pertenece a una empresa
+                        planificaTechApi.get('gerentes/getEmpresaByGerenteId', {
+                            params: {
+                                id_gerente: localStorage.getItem('id')
+                            }
+                        })
+                        .then((response) => {
+                            toast.success(`Bienvenido a ${response.data[0].nombre_empresa}`);
+                            console.log(response);
+                            setTimeout(() => {
+                                navigate('/home');
+                            }, 2000);
+                        })
+                        .catch((error) => {
+                            toast.info(`${error.response.data.message}`);
+                            setTimeout(() => {
+                                navigate('/');
+                            }, 2000);
+                        });
                     })
                     .catch((error) => {
                         toast.error(`${error.response.data.message}`);

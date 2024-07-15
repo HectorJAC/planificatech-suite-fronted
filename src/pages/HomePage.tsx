@@ -6,9 +6,11 @@ import { getImageUrl } from "../helpers/getImageUrl";
 import { CompanyProps } from "../interfaces/companyInteface";
 import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
 import { CustomBasicModal } from "../components/CustomBasicModal";
+import { useNavigate } from "react-router-dom";
 
 export const HomePage = () => {
 
+    const navigate = useNavigate();
     const [companyData, setCompanyData] = useState<CompanyProps>();
     const [showModal, setShowModal] = useState(false);
 
@@ -56,7 +58,7 @@ export const HomePage = () => {
                 primaryButton="Crear departamento ahora"
                 showModal={showModal}
                 setShowModal={() => setShowModal(false)}
-                onClick={() => console.log('Crear departamento ahora')}
+                onClick={() => navigate('/create_department')}
             />
         </Layout>
     );
