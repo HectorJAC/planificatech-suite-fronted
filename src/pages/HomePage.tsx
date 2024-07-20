@@ -25,19 +25,22 @@ export const HomePage = () => {
     }, []);
 
     useEffect(() => {
-        axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
-            params: {
-                id_empresa: companyData?.id_empresa
-            }
-        })
-        .then((response) => {
-            console.log('departamentos empresa', response.data);
-        })
-        .catch((error) => {
-            console.log(error);
-            setShowModal(true);
-        });
-    }, [companyData?.id_empresa]);
+        if (companyData?.id_empresa === undefined) {
+            return;
+        } else {
+            axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
+                params: {
+                    id_empresa: companyData?.id_empresa
+                }
+            })
+            .then(() => {
+                setShowModal(false);
+            })
+            .catch(() => {
+                setShowModal(true);
+            });
+        }
+    }, [companyData]);
     
     return (
         <Layout>

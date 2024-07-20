@@ -7,7 +7,6 @@ import { SlLogout } from "react-icons/sl";
 import { FaNoteSticky } from "react-icons/fa6";
 import { useState } from 'react';
 import { NotesModal } from './NotesModal';
-import { ToastContainer } from "react-toastify";
 import { useUI } from '../context/useUI';
 import { CustomBasicModal } from './CustomBasicModal';
 
@@ -127,7 +126,6 @@ export const Header = ({ companyName, userName }: HeaderProps) => {
                 setShowModal={() => setShowLogoutModal(false)}
                 onClick={handleLogout}
             />
-            <ToastContainer />
         </>
     );
 };

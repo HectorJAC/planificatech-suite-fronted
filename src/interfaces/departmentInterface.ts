@@ -3,7 +3,7 @@ export interface DepartmentProps {
     nombre_departamento?: string;
     descripcion_departamento?: string;
     presupuesto_asignado?: number;
-    id_gerente?: string;
-    id_empresa?: string;
+    id_gerente?: number;
+    id_empresa?: number;
     estado?: string;
 }

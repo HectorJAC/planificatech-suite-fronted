@@ -2,7 +2,8 @@ import axios from "axios";
 import { FC, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { getIdUser } from "../helpers/getLocalStorageData";
+import { CustomAsterisk } from "./CustomAsterisk";
 
 interface NotesModalProps {
     showModal: boolean;
@@ -25,28 +26,33 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
     const fechaCreacionNota = new Date().toLocaleDateString();
 
     const handleSaveNote = () => {
-        axios.post(`${import.meta.env.VITE_API_URL}/notas/createNote`, {
-            titulo_nota: noteData.tituloNota,
-            descripcion_nota: noteData.descripcionNota,
-            fecha_creacion_nota: fechaCreacionNota,
-            id_usuario: getIdDirectorGeneral(),
-            estado: 'ACTIVO'
-        })
-        .then((response) => {
-            toast.success(`${response.data.message}`);
-        })
-        .catch((error) => {
-            toast.error(`${error.response.data.message}`);
-        });
-
-        // Limpiar los campos del formulario
-        setNoteData({
-            tituloNota: '',
-            descripcionNota: '',
-        });
-
-        // Cerrar el modal
-        setShowModal(false);
+        if (noteData.tituloNota === '' || noteData.descripcionNota === '') {
+            toast.error('Todos los campos son obligatorios');
+            return;
+        } else {
+            axios.post(`${import.meta.env.VITE_API_URL}/notas/createNote`, {
+                titulo_nota: noteData.tituloNota,
+                descripcion_nota: noteData.descripcionNota,
+                fecha_creacion_nota: fechaCreacionNota,
+                id_usuario: getIdUser(),
+                estado: 'ACTIVO'
+            })
+            .then((response) => {
+                toast.success(`${response.data.message}`);
+            })
+            .catch((error) => {
+                toast.error(`${error.response.data.message}`);
+            });
+    
+            // Limpiar los campos del formulario
+            setNoteData({
+                tituloNota: '',
+                descripcionNota: '',
+            });
+    
+            // Cerrar el modal
+            setShowModal(false);
+        }
     };
 
     return (
@@ -57,7 +63,7 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
             <Modal.Body>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Titulo de la Nota</Form.Label>
+                        <Form.Label><CustomAsterisk /> Titulo de la Nota</Form.Label>
                         <Form.Control 
                             type="text" 
                             placeholder="Ingrese el nombre de la nota" 
@@ -67,7 +73,7 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
                     </Form.Group>
 
                     <Form.Group>
-                        <Form.Label>Fecha Creación de la Nota</Form.Label>
+                        <Form.Label><CustomAsterisk /> Fecha Creación de la Nota</Form.Label>
                         <Form.Control 
                             type="text" 
                             readOnly
@@ -77,7 +83,7 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
                     </Form.Group>
 
                     <Form.Group>
-                        <Form.Label>Descripción de la nota</Form.Label>
+                        <Form.Label><CustomAsterisk /> Descripción de la nota</Form.Label>
                         <Form.Control 
                             as="textarea" 
                             rows={3} 

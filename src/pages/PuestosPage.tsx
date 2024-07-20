@@ -4,6 +4,7 @@ import { Container, Row, Col, Button, Form, Table, Modal } from "react-bootstrap
 import { Layout } from "../layout/Layout";
 import { toast, ToastContainer } from 'react-toastify';
 import { EditButton, DeleteButton } from "../components/Buttons";
+import { CustomAsterisk } from "../components/CustomAsterisk";
 
 interface PuestoProps {
     id_puesto: number;
@@ -64,8 +65,9 @@ export const PuestosPage = () => {
     };
 
     const handleSubmit = () => {
-        if (puestoData.nombre_puesto === '') {
+        if (puestoData.nombre_puesto === undefined) {
             toast.error('Debe ingresar el nombre del puesto');
+            return;
         } else {
             axios.post(`${import.meta.env.VITE_API_URL}/puestos/createPuesto`, {
                 nombre_puesto: puestoData.nombre_puesto,
@@ -208,7 +210,7 @@ export const PuestosPage = () => {
                     <Modal.Body>
                         <Form>
                             <Form.Group>
-                                <Form.Label>Nombre Puesto</Form.Label>
+                                <Form.Label><CustomAsterisk /> Nombre Puesto</Form.Label>
                                 <Form.Control 
                                     type="text" 
                                     placeholder="Ingrese nombre del puesto" 
