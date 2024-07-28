@@ -13,6 +13,7 @@ import { EditCompanyPage } from "./pages/EditCompanyPage";
 import { GraphicsPage } from "./pages/GraphicsPage";
 import { MyNotesPage } from "./pages/MyNotesPage";
 import { CreateDepartmentPage } from "./pages/CreateDepartmentPage";
+import { GerentesPage } from "./pages/GerentesPage";
 
 function App() {
 
@@ -33,6 +34,7 @@ function App() {
             <Route path='/graphics' element={<GraphicsPage />} />
             <Route path='/my_notes' element={<MyNotesPage />} />
             <Route path='/create_department' element={<CreateDepartmentPage />} />
+            <Route path='/list_managers' element={<GerentesPage />} />
           </Route>
         </Routes>
     </BrowserRouter>

@@ -9,7 +9,8 @@ import { toast, ToastContainer } from "react-toastify";
 import { CustomAsterisk } from "../components/CustomAsterisk";
 import { GerentesProps } from "../interfaces/gerenteInterface";
 import { Spinner } from "../components/Spinner";
-import { DeleteButton, EditButton } from "../components/Buttons";
+import { CustomButton } from "../components/CustomButton";
+import { ActivateIcon, EditIcon, InactiveIcon } from "../helpers/iconButtons";
 
 export const CreateDepartmentPage = () => {
     const [showModal, setShowModal] = useState(false);
@@ -87,13 +88,57 @@ export const CreateDepartmentPage = () => {
         setDepartmentData({} as DepartmentProps);
     };
 
+    const handleGetDepartment = (id: number) => {
+        axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getOneDepartment`, {
+            params: {
+                id_departamento: id
+            }
+        })
+        .then((response) => {
+            setDepartmentData(response.data);
+        })
+        .catch((error) => {
+            toast.error(error);
+        });
+    };
+
     const handleSubmit = () => {
+        if (departmentData.nombre_departamento === undefined || departmentData.presupuesto_asignado === undefined) {
+            toast.error('Llenar los campos requeridos');
+        } else if (departments.some(department => department.id_gerente === departmentData.id_gerente)) {
+            toast.error('El gerente seleccionado ya esta asignado a otro departamento');
+        } else {
+            axios.post(`${import.meta.env.VITE_API_URL}/departamentos/createDepartment`, {
+                id_empresa: companyData?.id_empresa,
+                nombre_departamento: departmentData.nombre_departamento,
+                descripcion_departamento: departmentData.descripcion_departamento,
+                presupuesto_asignado: departmentData.presupuesto_asignado,
+                id_gerente: departmentData.id_gerente,
+                estado: 'ACTIVO'
+            })
+            .then((response) => {
+                toast.success(response.data.message);
+
+                // Cerrar modal
+                setShowModal(false);
+                // Limpiar campos del formulario
+                setDepartmentData({} as DepartmentProps);
+                // Actualizar la lista de departamentos
+                getAllDepartments();
+            })
+            .catch((error) => {
+                toast.error(error);
+            });
+        }
+    };
+
+    const handleUpdate = () => {
         if (departmentData.nombre_departamento === undefined || departmentData.presupuesto_asignado === undefined) {
             toast.error('Llenar los campos requeridos');
             return;
         } else {
-            axios.post(`${import.meta.env.VITE_API_URL}/departamentos/createDepartment`, {
-                id_empresa: companyData?.id_empresa,
+            axios.put(`${import.meta.env.VITE_API_URL}/departamentos/updateDepartment`, {
+                id_departamento: departmentData.id_departamento,
                 nombre_departamento: departmentData.nombre_departamento,
                 descripcion_departamento: departmentData.descripcion_departamento,
                 presupuesto_asignado: departmentData.presupuesto_asignado,
@@ -131,6 +176,21 @@ export const CreateDepartmentPage = () => {
         });
     };
 
+    const handleActive = (id: number) => {
+        axios.put(`${import.meta.env.VITE_API_URL}/departamentos/activateDepartment`, {
+            id_departamento: id
+        })
+        .then((response) => {
+            setIsLoading(true);
+            toast.success(response.data.message);
+            getAllDepartments();
+            setIsLoading(false);
+        })
+        .catch((error) => {
+            toast.error(error.response.data.message);
+        });
+    };
+
     const handlePuestosInactivos = () => {
         axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getInactiveDepartamentos`, {
             params: {
@@ -139,9 +199,13 @@ export const CreateDepartmentPage = () => {
         })
         .then((response) => {
             if (isCheckboxChecked === false) {
+                setIsLoading(true);
                 setDepartments(response.data);
+                setIsLoading(false);
             } else {
+                setIsLoading(true);
                 getAllDepartments();
+                setIsLoading(false);
             }
         })
         .catch((error) => {
@@ -253,8 +317,35 @@ export const CreateDepartmentPage = () => {
                                                     </td>
                                                     <td>{department.estado}</td>
                                                     <td>
-                                                        <EditButton />
-                                                        <DeleteButton />
+                                                        <CustomButton
+                                                            text='Editar'
+                                                            placement='top'
+                                                            disabled={department.estado === 'INACTIVO'} 
+                                                            onclick={() => {
+                                                                handleShowModal()
+                                                                handleGetDepartment(department.id_departamento!)
+                                                            }}
+                                                            icon={<EditIcon />}
+                                                        />
+                                                        {
+                                                            department.estado === 'ACTIVO'
+                                                            ? (
+                                                                <CustomButton 
+                                                                    text='Inactivar'
+                                                                    placement='top'
+                                                                    onclick={() => handleInactive(department.id_departamento!)}
+                                                                    icon={<InactiveIcon />}
+                                                                />
+                                                            )
+                                                            : (
+                                                                <CustomButton 
+                                                                    text='Activar'
+                                                                    placement='top'
+                                                                    onclick={() => handleActive(department.id_departamento!)}
+                                                                    icon={<ActivateIcon />}
+                                                                />
+                                                            )
+                                                        }
                                                     </td>
                                                 </tr>
                                             ))
@@ -276,10 +367,39 @@ export const CreateDepartmentPage = () => {
                                                     </td>
                                                     <td>{department.estado}</td>
                                                     <td>
-                                                        <EditButton />
-                                                        <DeleteButton 
-                                                            onclick={() => handleInactive(department.id_departamento!)}
+                                                        <CustomButton
+                                                            text='Editar'
+                                                            placement='top'
+                                                            disabled={department.estado === 'INACTIVO'} 
+                                                            onclick={() => {
+                                                                handleShowModal()
+                                                                handleGetDepartment(department.id_departamento!)
+                                                            }}
+                                                            icon={<EditIcon />}
+                                                            color="primary"
+                                                            style={{marginRight: '10px'}}
                                                         />
+                                                        {
+                                                            department.estado === 'ACTIVO'
+                                                            ? (
+                                                                <CustomButton 
+                                                                    text='Inactivar'
+                                                                    placement='top'
+                                                                    onclick={() => handleInactive(department.id_departamento!)}
+                                                                    icon={<InactiveIcon />}
+                                                                    color="danger"
+                                                                />
+                                                            )
+                                                            : (
+                                                                <CustomButton 
+                                                                    text='Activar'
+                                                                    placement='top'
+                                                                    onclick={() => handleActive(department.id_departamento!)}
+                                                                    icon={<ActivateIcon />}
+                                                                    color="danger"
+                                                                />
+                                                            )
+                                                        }
                                                     </td>
                                                 </tr>
                                             ))
@@ -329,6 +449,11 @@ export const CreateDepartmentPage = () => {
                                         <Form.Label> Gerente del departamento</Form.Label>
                                         <Form.Select
                                             onChange={(e) => setDepartmentData({...departmentData, id_gerente: Number(e.target.value)})}
+                                            value={
+                                                gerentes.filter((gerente) => gerente.id_gerente === departmentData.id_gerente)
+                                                ? departmentData.id_gerente
+                                                : ''
+                                            }
                                         >
                                             <option value="">--Seleccione una opcion--</option>
                                             {
@@ -349,8 +474,12 @@ export const CreateDepartmentPage = () => {
                                 <Button variant="secondary" onClick={handleCloseModal}>
                                     Cerrar
                                 </Button>
-                                <Button variant="primary" type="submit" onClick={handleSubmit}>
-                                    Guardar
+                                <Button 
+                                    variant="primary" 
+                                    type="submit" 
+                                    onClick={departmentData.id_departamento ? handleUpdate : handleSubmit}
+                                >
+                                    {departmentData.id_departamento ? 'Actualizar' : 'Guardar'}
                                 </Button>
                             </Modal.Footer>
                         </Modal>

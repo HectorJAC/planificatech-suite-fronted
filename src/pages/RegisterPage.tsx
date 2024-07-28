@@ -360,6 +360,7 @@ export const RegisterPage = () => {
                                                 <Form.Label><CustomAsterisk/> Empresa</Form.Label>
                                                 <Form.Select
                                                     onChange={handleSelectEmpresa}
+                                                    value={empresa[0]?.id_empresa}
                                                 >
                                                     <option value="">--Seleccione una opcion--</option>
                                                     {
