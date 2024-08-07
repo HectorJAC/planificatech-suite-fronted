@@ -6,8 +6,8 @@ export interface UIState {
 }
 
 export const initialState: UIState = {
-    openSection: null,
-    closeSection: null
+  openSection: null,
+  closeSection: null
 };
   
 export type Action = 

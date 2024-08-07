@@ -5,6 +5,6 @@ export const UIContext = createContext<{
     state: UIState;
     dispatch: Dispatch<Action>;
 }>({
-    state: initialState,
-    dispatch: () => undefined,
+  state: initialState,
+  dispatch: () => undefined,
 });
