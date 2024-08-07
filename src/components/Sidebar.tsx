@@ -86,7 +86,7 @@ export const Sidebar:FC = () => {
                             <Nav.Link onClick={() => navigate('/list_managers')}>Consultas Gerentes</Nav.Link>
                         </Accordion.Body>
                         <Accordion.Body className="sidebar-body">
-                            <Nav.Link>Gráficas Gerentes</Nav.Link>
+                            <Nav.Link>Despedir Gerente</Nav.Link>
                         </Accordion.Body>
                     </Accordion.Item>
                 )

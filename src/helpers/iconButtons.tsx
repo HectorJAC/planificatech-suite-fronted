@@ -5,21 +5,21 @@ import { FaCheck } from "react-icons/fa";
 import { IoMdClose } from "react-icons/io";
 
 export const EditIcon = () => {
-    return <FiEdit />
+  return <FiEdit />
 };
 
 export const ViewIcon = () => {
-    return <FaEye />
+  return <FaEye />
 };
 
 export const DeleteIcon = () => {
-    return <MdDelete />
+  return <MdDelete />
 };
 
 export const ActivateIcon = () => {
-    return <FaCheck />
+  return <FaCheck />
 };
 
 export const InactiveIcon = () => {
-    return <IoMdClose />
+  return <IoMdClose />
 };

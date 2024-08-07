@@ -16,27 +16,26 @@ import { CreateDepartmentPage } from "./pages/CreateDepartmentPage";
 import { GerentesPage } from "./pages/GerentesPage";
 
 function App() {
-
   return (
     <BrowserRouter>
-        <Routes>
-          <Route path='/' element={<Login />} />
-          <Route path='/register' element={<RegisterPage />} />
-          <Route path='/forget_password' element={<ForgetPasswordPage />} />
-          <Route element={<ProtectedRoute />} >
-            <Route path='*' element={<ErrorPage />} />
-            <Route path='/new_company' element={<NewCompany />} />
-            <Route path='/home' element={<HomePage />} />
-            <Route path='/dashboard' element={<DashboardPage />} />
-            <Route path='/profile' element={<ProfilePage />} />
-            <Route path='/puestos' element={<PuestosPage />} />
-            <Route path='/edit_company' element={<EditCompanyPage />} />
-            <Route path='/graphics' element={<GraphicsPage />} />
-            <Route path='/my_notes' element={<MyNotesPage />} />
-            <Route path='/create_department' element={<CreateDepartmentPage />} />
-            <Route path='/list_managers' element={<GerentesPage />} />
-          </Route>
-        </Routes>
+      <Routes>
+        <Route path='/' element={<Login />} />
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/forget_password' element={<ForgetPasswordPage />} />
+        <Route element={<ProtectedRoute />} >
+          <Route path='*' element={<ErrorPage />} />
+          <Route path='/new_company' element={<NewCompany />} />
+          <Route path='/home' element={<HomePage />} />
+          <Route path='/dashboard' element={<DashboardPage />} />
+          <Route path='/profile' element={<ProfilePage />} />
+          <Route path='/puestos' element={<PuestosPage />} />
+          <Route path='/edit_company' element={<EditCompanyPage />} />
+          <Route path='/graphics' element={<GraphicsPage />} />
+          <Route path='/my_notes' element={<MyNotesPage />} />
+          <Route path='/create_department' element={<CreateDepartmentPage />} />
+          <Route path='/list_managers' element={<GerentesPage />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   )
 }
