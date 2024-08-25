@@ -3,34 +3,23 @@ import axios from "axios";
 import { Container, Image } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
 import { getImageUrl } from "../helpers/getImageUrl";
-import { CompanyProps } from "../interfaces/companyInteface";
-import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import { useNavigate } from "react-router-dom";
+import { useCompanyStore } from "../store/companyStore";
 
 export const HomePage = () => {
 
   const navigate = useNavigate();
-  const [companyData, setCompanyData] = useState<CompanyProps>();
   const [showModal, setShowModal] = useState(false);
+  const { company } = useCompanyStore();
 
   useEffect(() => {
-    findCompanyByDirector()
-      .then((response) => {
-        setCompanyData(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  useEffect(() => {
-    if (companyData?.id_empresa === undefined) {
+    if (company.id_empresa === undefined) {
       return;
     } else {
       axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
         params: {
-          id_empresa: companyData?.id_empresa
+          id_empresa: company.id_empresa
         }
       })
         .then(() => {
@@ -40,14 +29,14 @@ export const HomePage = () => {
           setShowModal(true);
         });
     }
-  }, [companyData]);
+  }, [company]);
     
   return (
     <Layout>
       <Container className="mt-3 d-flex justify-content-center align-items-center">
-        {companyData?.logo_empresa && (
+        {company.logo_empresa && (
           <Image 
-            src={getImageUrl(companyData.logo_empresa)} 
+            src={getImageUrl(company.logo_empresa)} 
             alt="Logo de la empresa" 
             fluid
           />

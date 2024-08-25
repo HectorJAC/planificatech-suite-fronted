@@ -1,49 +1,47 @@
 import { Button, Col, Container, Form, Modal, Row, Table } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
 import { useCallback, useEffect, useState } from "react";
-import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
-import { CompanyProps } from "../interfaces/companyInteface";
 import axios from "axios";
-import { DepartmentProps } from "../interfaces/departmentInterface";
+import { DepartmentsProps, DepartmentProps } from "../interfaces/departmentInterface";
 import { toast, ToastContainer } from "react-toastify";
 import { CustomAsterisk } from "../components/CustomAsterisk";
 import { GerentesProps } from "../interfaces/gerenteInterface";
 import { Spinner } from "../components/Spinner";
 import { CustomButton } from "../components/CustomButton";
 import { ActivateIcon, EditIcon, InactiveIcon } from "../helpers/iconButtons";
+import { useCompanyStore } from "../store/companyStore";
+import { planificaTechApi } from "../api/baseApi";
 
 export const CreateDepartmentPage = () => {
   const [showModal, setShowModal] = useState(false);
-  const [companyData, setCompanyData] = useState<CompanyProps>();
-  const [departments, setDepartments] = useState<DepartmentProps[]>([]);
-  const [searchResults, setSearchResults] = useState<DepartmentProps[]>([]);
+  const [departments, setDepartments] = useState<DepartmentsProps>();
   const [searchDepartment, setSearchDepartment] = useState('');
   const [departmentData, setDepartmentData] = useState({} as DepartmentProps);
-  const [gerentes, setGerentes] = useState<GerentesProps[]>([]);
+  const [gerentes, setGerentes] = useState<GerentesProps>();
   const [isLoading, setIsLoading] = useState(false);
   const [isCheckboxChecked, setIsCheckboxChecked] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  useEffect(() => {
-    findCompanyByDirector()
-      .then((response) => {
-        setCompanyData(response);
-      })
-      .catch(() => {});
-  }, []);
+  const { company } = useCompanyStore();
 
-  const getAllDepartments = useCallback(() => {
-    if (companyData?.id_empresa === undefined) {
+  const getAllDepartments = useCallback((pageNumber = 1) => {
+    if (company.id_empresa === undefined) {
       return;
     } else {
       setIsLoading(true);
       axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
         params: {
-          id_empresa: companyData?.id_empresa,
-          estado: 'ACTIVO'
+          id_empresa: company.id_empresa,
+          estado: 'ACTIVO',
+          page: pageNumber,
+          limit: 7
         }
       })
         .then((response) => {
           setDepartments(response.data);
+          setCurrentPage(pageNumber);
+          setTotalPages(response.data.totalPages);
           setIsLoading(false);
           return;
         })
@@ -51,14 +49,16 @@ export const CreateDepartmentPage = () => {
           setIsLoading(false);
         });
     }
-  }, [companyData?.id_empresa]);
+  }, [company.id_empresa]);
 
-  useEffect(getAllDepartments, [getAllDepartments]);
+  useEffect(() => {
+    getAllDepartments(1)
+  }, [getAllDepartments]);
 
   useEffect(() => {
     axios.get(`${import.meta.env.VITE_API_URL}/gerentes/getGerentesByCompany`, {
       params: {
-        id_empresa: companyData?.id_empresa
+        id_empresa: company.id_empresa
       }
     })
       .then((response) => {
@@ -67,16 +67,7 @@ export const CreateDepartmentPage = () => {
       .catch((error) => {
         console.log(error);
       });
-  }, [showModal, companyData?.id_empresa]);
-
-  const handleSearchDepartment = () => {
-    const results = departments.filter(department => department.nombre_departamento?.toLowerCase().includes(searchDepartment.toLowerCase()));
-    if (results.length > 0) {
-      setSearchResults(results);
-    } else {
-      toast.error('No se encontraron resultados');
-    }
-  };
+  }, [showModal, company.id_empresa]);
 
   const handleShowModal = () => {
     setShowModal(true);
@@ -105,11 +96,11 @@ export const CreateDepartmentPage = () => {
   const handleSubmit = () => {
     if (departmentData.nombre_departamento === undefined || departmentData.presupuesto_asignado === undefined) {
       toast.error('Llenar los campos requeridos');
-    } else if (departments.some(department => department.id_gerente === departmentData.id_gerente)) {
+    } else if (departments?.departments.some(department => department.id_gerente === departmentData.id_gerente)) {
       toast.error('El gerente seleccionado ya esta asignado a otro departamento');
     } else {
       axios.post(`${import.meta.env.VITE_API_URL}/departamentos/createDepartment`, {
-        id_empresa: companyData?.id_empresa,
+        id_empresa: company.id_empresa,
         nombre_departamento: departmentData.nombre_departamento,
         descripcion_departamento: departmentData.descripcion_departamento,
         presupuesto_asignado: departmentData.presupuesto_asignado,
@@ -194,7 +185,7 @@ export const CreateDepartmentPage = () => {
   const handlePuestosInactivos = () => {
     axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getInactiveDepartamentos`, {
       params: {
-        id_empresa: companyData?.id_empresa
+        id_empresa: company.id_empresa
       }
     })
       .then((response) => {
@@ -213,6 +204,41 @@ export const CreateDepartmentPage = () => {
       });
   };
 
+  const handleSearchDepartment = () => {
+    setIsLoading(true);
+    if (searchDepartment === '') {
+      getAllDepartments();
+    } else {
+      planificaTechApi.get(`/departamentos/searchDepartment`, {
+        params: {
+          search: searchDepartment,
+          id_empresa: company.id_empresa,
+          estado: 'ACTIVO'
+        }
+      })
+        .then((response) => {
+          setDepartments(response.data);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+          setIsLoading(false);
+        })
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      getAllDepartments(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      getAllDepartments(currentPage + 1);
+    }
+  };
+
   return (
     <Layout>
       {
@@ -227,7 +253,7 @@ export const CreateDepartmentPage = () => {
               <Row>
                 <Col>
                   <h1 className="mt-3 mb-4">
-                                    Crear Departamentos
+                    Crear Departamentos
                   </h1>
                 </Col>
               </Row>
@@ -242,7 +268,7 @@ export const CreateDepartmentPage = () => {
                     }}
                     onClick={handleShowModal}
                   >
-                                    Nuevo Departamento
+                    Nuevo Departamento
                   </Button>
                 </Col>
 
@@ -258,7 +284,7 @@ export const CreateDepartmentPage = () => {
                       variant="primary" 
                       onClick={handleSearchDepartment}
                     >
-                                        Buscar
+                      Buscar
                     </Button>
                   </div>
                 </Col>
@@ -299,66 +325,16 @@ export const CreateDepartmentPage = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {searchResults.length > 0 ? (
-                        searchResults.map((department, index) => (
-                          <tr key={index}>
+                      {
+                        departments?.departments.map((department) => (
+                          <tr key={department.id_departamento}>
                             <td>{department.id_departamento}</td>
                             <td>{department.nombre_departamento}</td>
                             <td>{department.descripcion_departamento}</td>
                             <td>{department.presupuesto_asignado}</td>
                             <td>
                               {
-                                gerentes.map((gerente) => (
-                                  department.id_gerente === gerente.id_gerente ? (
-                                    gerente.nombres + ' ' + gerente.apellidos
-                                  ) : null
-                                ))
-                              }
-                            </td>
-                            <td>{department.estado}</td>
-                            <td>
-                              <CustomButton
-                                text='Editar'
-                                placement='top'
-                                disabled={department.estado === 'INACTIVO'} 
-                                onclick={() => {
-                                  handleShowModal()
-                                  handleGetDepartment(department.id_departamento!)
-                                }}
-                                icon={<EditIcon />}
-                              />
-                              {
-                                department.estado === 'ACTIVO'
-                                  ? (
-                                    <CustomButton 
-                                      text='Inactivar'
-                                      placement='top'
-                                      onclick={() => handleInactive(department.id_departamento!)}
-                                      icon={<InactiveIcon />}
-                                    />
-                                  )
-                                  : (
-                                    <CustomButton 
-                                      text='Activar'
-                                      placement='top'
-                                      onclick={() => handleActive(department.id_departamento!)}
-                                      icon={<ActivateIcon />}
-                                    />
-                                  )
-                              }
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        departments.map((department, index) => (
-                          <tr key={index}>
-                            <td>{department.id_departamento}</td>
-                            <td>{department.nombre_departamento}</td>
-                            <td>{department.descripcion_departamento}</td>
-                            <td>{department.presupuesto_asignado}</td>
-                            <td>
-                              {
-                                gerentes.map((gerente) => (
+                                gerentes?.managers.map((gerente) => (
                                   department.id_gerente === gerente.id_gerente ? (
                                     gerente.nombres + ' ' + gerente.apellidos
                                   ) : null
@@ -403,9 +379,29 @@ export const CreateDepartmentPage = () => {
                             </td>
                           </tr>
                         ))
-                      )}
+                      }
                     </tbody>
                   </Table>
+                </Col>
+              </Row>
+              
+              <Row>
+                <Col className="d-flex justify-content-between align-items-center">
+                  <Button 
+                    variant="secondary" 
+                    onClick={handlePreviousPage} 
+                    disabled={currentPage === 1}
+                  >
+                    Anterior
+                  </Button>
+                  <span>Página {currentPage} de {totalPages}</span>
+                  <Button 
+                    variant="secondary" 
+                    onClick={handleNextPage} 
+                    disabled={currentPage === totalPages}
+                  >
+                    Siguiente
+                  </Button>
                 </Col>
               </Row>
               <Modal show={showModal} onHide={handleCloseModal}>
@@ -450,14 +446,14 @@ export const CreateDepartmentPage = () => {
                       <Form.Select
                         onChange={(e) => setDepartmentData({...departmentData, id_gerente: Number(e.target.value)})}
                         value={
-                          gerentes.filter((gerente) => gerente.id_gerente === departmentData.id_gerente)
+                          gerentes?.managers.filter((gerente) => gerente.id_gerente === departmentData.id_gerente)
                             ? departmentData.id_gerente
                             : ''
                         }
                       >
                         <option value="">--Seleccione una opcion--</option>
                         {
-                          gerentes.map((gerente) => (
+                          gerentes?.managers.map((gerente) => (
                             <option 
                               key={gerente.id_gerente} 
                               value={gerente.id_gerente}
@@ -472,7 +468,7 @@ export const CreateDepartmentPage = () => {
                 </Modal.Body>
                 <Modal.Footer>
                   <Button variant="secondary" onClick={handleCloseModal}>
-                        Cerrar
+                    Cerrar
                   </Button>
                   <Button 
                     variant="primary" 

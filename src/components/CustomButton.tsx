@@ -14,27 +14,27 @@ interface ButtonProps {
 }
 
 export const CustomButton:FC<ButtonProps> = ({onclick, disabled, icon, text, placement, color, style}) => {
-    const renderTooltip = (props:object) => (
-        <Tooltip id="button-tooltip" {...props}>
-            {text}
-        </Tooltip>
-    );
+  const renderTooltip = (props:object) => (
+    <Tooltip id="button-tooltip" {...props}>
+      {text}
+    </Tooltip>
+  );
 
-    return (
-        <OverlayTrigger
-            placement={placement}
-            delay={{ show: 100, hide: 100 }}
-            overlay={renderTooltip}
-        >
-            <Button 
-                onClick={onclick} 
-                disabled={disabled}
-                variant={color}
-                style={style}
-            >
-                {icon}
-            </Button>
-        </OverlayTrigger>
-    );
+  return (
+    <OverlayTrigger
+      placement={placement}
+      delay={{ show: 100, hide: 100 }}
+      overlay={renderTooltip}
+    >
+      <Button 
+        onClick={onclick} 
+        disabled={disabled}
+        variant={color}
+        style={style}
+      >
+        {icon}
+      </Button>
+    </OverlayTrigger>
+  );
 };
 

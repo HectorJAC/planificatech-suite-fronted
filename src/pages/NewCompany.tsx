@@ -63,7 +63,7 @@ export const NewCompany = () => {
           toast.success('Empresa registrada exitosamente');
           toast.success(`Bienvenido a ${response.data.empresa.nombre_empresa}`);
           setTimeout(() => {
-            navigate('/home');
+            navigate('/');
           }, 2000);
         })
         .catch((error) => {
@@ -82,7 +82,7 @@ export const NewCompany = () => {
   };
 
   const gotoLogin = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   return (

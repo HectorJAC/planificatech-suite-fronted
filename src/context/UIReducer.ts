@@ -1,4 +1,4 @@
-import { Action, UIState } from "../interfaces/contextInterfaces";
+import { Action, initialState, UIState } from "../interfaces/contextInterfaces";
 
 export const uiReducer = (state: UIState, action: Action): UIState => {
   switch (action.type) {
@@ -12,6 +12,13 @@ export const uiReducer = (state: UIState, action: Action): UIState => {
       ...state,
       closeSection: action.payload,
     };
+  case 'SET_ACTIVE_OPTION':
+    return {
+      ...state,
+      activeOption: action.payload,
+    };
+  case 'RESET_CONTEXT':
+    return initialState;
   default:
     return state;
   }

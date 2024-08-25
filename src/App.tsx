@@ -14,18 +14,22 @@ import { GraphicsPage } from "./pages/GraphicsPage";
 import { MyNotesPage } from "./pages/MyNotesPage";
 import { CreateDepartmentPage } from "./pages/CreateDepartmentPage";
 import { GerentesPage } from "./pages/GerentesPage";
+import { EmployeesPage } from "./pages/EmployeesPage";
+import { CreateEmployeePage } from "./pages/CreateEmployeePage";
+import { ConsultCompanyPage } from "./pages/ConsultCompanyPage";
+import { GraficasEmpleadosPage } from "./pages/GraficasEmpleadosPage";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Login />} />
+        <Route path='/login' element={<Login />} />
         <Route path='/register' element={<RegisterPage />} />
         <Route path='/forget_password' element={<ForgetPasswordPage />} />
         <Route element={<ProtectedRoute />} >
           <Route path='*' element={<ErrorPage />} />
           <Route path='/new_company' element={<NewCompany />} />
-          <Route path='/home' element={<HomePage />} />
+          <Route path='/' element={<HomePage />} />
           <Route path='/dashboard' element={<DashboardPage />} />
           <Route path='/profile' element={<ProfilePage />} />
           <Route path='/puestos' element={<PuestosPage />} />
@@ -34,6 +38,10 @@ function App() {
           <Route path='/my_notes' element={<MyNotesPage />} />
           <Route path='/create_department' element={<CreateDepartmentPage />} />
           <Route path='/list_managers' element={<GerentesPage />} />
+          <Route path='/list_employees' element={<EmployeesPage />} />
+          <Route path='/create_employee' element={<CreateEmployeePage />} />
+          <Route path='/consult_company' element={<ConsultCompanyPage />} />
+          <Route path='/graphics_employees' element={<GraficasEmpleadosPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
