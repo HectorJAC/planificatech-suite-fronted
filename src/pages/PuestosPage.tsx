@@ -9,15 +9,7 @@ import { Spinner } from "../components/Spinner";
 import { ActivateIcon, EditIcon, InactiveIcon } from "../helpers/iconButtons";
 import { UserProps } from "../interfaces/userInterface";
 import { getIdUser } from "../helpers/getLocalStorageData";
-
-interface PuestoProps {
-    id_puesto: number;
-    nombre_puesto: string;
-    descripcion_puesto: string;
-    id_usuario_creacion: number;
-    id_usuario_actualizacion: number;
-    estado: string;
-}
+import { PuestoProps } from "../interfaces/puestosInterface";
 
 export const PuestosPage = () => {
   const [puestos, setPuestos] = useState<PuestoProps[]>([]);

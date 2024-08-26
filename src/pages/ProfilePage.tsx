@@ -10,24 +10,24 @@ import { CustomBasicModal } from "../components/CustomBasicModal";
 import { getDirectorGeneralById } from "../api/director_general/getDIrectorGeneralById";
 import { getUserById } from "../api/usuarios/getUserById";
 import { handleDataNull } from "../helpers/handleDataNull";
-import { formatterDate } from "../helpers/formatters";
+import DatePicker from "react-datepicker";
 
 interface UserDataProps {
-    nombres: string;
-    apellidos: string;
-    cedula: number;
-    lugar_nacimiento: string;
-    fecha_nacimiento: string;
-    direccion_residencia: string;
-    numero_telefonico: number;
-    correo: string;
-    estado_civil: string;
-    nivel_academico: string;
+  nombres: string;
+  apellidos: string;
+  cedula: number;
+  lugar_nacimiento: string;
+  fecha_nacimiento: string;
+  direccion_residencia: string;
+  numero_telefonico: number;
+  correo: string;
+  estado_civil: string;
+  nivel_academico: string;
 }
 
 interface UserNamePassowrdProps {
-    username: string;
-    password: string;
+  username: string;
+  password: string;
 }
 
 export const ProfilePage = () => {
@@ -162,6 +162,17 @@ export const ProfilePage = () => {
     setShowCancelModal(false);
   };
 
+  const handleDateChange = (date:any) => {
+    if (date !== null) {
+      setUserData(prevState => ({
+        ...prevState,
+        fecha_nacimiento: date
+      }));
+    } else {
+      toast.info('Ingrese una fecha')
+    }
+  };
+
   return (
     <Layout>
       <Container>
@@ -249,11 +260,11 @@ export const ProfilePage = () => {
                 ) : (
                   <>
                     <Button onClick={handleShowConfirmModal} variant="primary">
-                                            Guardar
+                      Guardar
                     </Button>
 
                     <Button onClick={handleShowCancelModal} variant="secondary">
-                                            Cancelar
+                      Cancelar
                     </Button>
                   </>
                 )}
@@ -277,7 +288,7 @@ export const ProfilePage = () => {
                     className="ms-2"
                     disabled={!editMode}
                   >
-                                        Cambiar
+                    Cambiar
                   </Button>
                 </div>
               </Form.Group>
@@ -293,12 +304,27 @@ export const ProfilePage = () => {
                             
               <Form.Group className="mb-3">
                 <Form.Label><CustomAsterisk/> Fecha de Nacimiento</Form.Label>
-                <Form.Control 
-                  type="date"
-                  placeholder="dd-mm-yyyy"  
-                  disabled={!editMode} 
-                  value={formatterDate(userData.fecha_nacimiento)} 
-                  onChange={(e) => setUserData(prevState => ({ ...prevState, fecha_nacimiento: e.target.value }))}
+                <br />
+                <DatePicker
+                  disabled={!editMode}
+                  selected={
+                    userData.fecha_nacimiento 
+                      ? new Date(userData.fecha_nacimiento )
+                      : null
+                  }
+                  required
+                  onChange={handleDateChange}
+                  dateFormat="dd/MM/yyyy"
+                  className="form-control"
+                  placeholderText="dd/mm/yyyy"
+                  customInput={
+                    <Form.Control 
+                      type="text"
+                      required
+                      value={userData.fecha_nacimiento }
+                      onChange={handleDateChange}
+                    />
+                  }
                 />
               </Form.Group>
 

@@ -1,62 +1,100 @@
 import axios from "axios";
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
 import { getIdUser } from "../helpers/getLocalStorageData";
 import { CustomAsterisk } from "./CustomAsterisk";
+import { formatterDate } from "../helpers/formatters";
+import { useNotesStore } from "../store/notesStore";
+import { OneNoteProps } from "../interfaces/notesInterface";
+import { planificaTechApi } from "../api/baseApi";
 
 interface NotesModalProps {
-    showModal: boolean;
-    setShowModal: (value: boolean) => void;
+  showModal: boolean;
+  setShowModal: (value: boolean) => void;
+  onHide?: () => void;
 }
 
-interface NoteProps {
-    tituloNota: string;
-    descripcionNota: string;
-}
+export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal, onHide}) => {
 
-export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
+  const { onCreateNoteSuccess, id_nota, onResetNota } = useNotesStore();
 
-  const [noteData, setNoteData] = useState<NoteProps>({
-    tituloNota: '',
-    descripcionNota: '',
-  });
+  const [noteData, setNoteData] = useState<OneNoteProps>({} as OneNoteProps);
+
+  useEffect(() => {
+    axios.get(`${import.meta.env.VITE_API_URL}/notas/getNote`, {
+      params: {
+        id_nota: id_nota
+      }
+    })
+      .then((response) => {
+        setNoteData(response.data);
+      })
+      .catch((error) => {
+        toast.error(error);
+      });
+  }, [id_nota])
 
   // Función para obtener la fecha de creación de la nota
   const fechaCreacionNota = new Date().toLocaleDateString();
 
   const handleSaveNote = () => {
-    if (noteData.tituloNota === '' || noteData.descripcionNota === '') {
+    if (noteData.titulo_nota === '' || noteData.descripcion_nota === '') {
       toast.error('Todos los campos son obligatorios');
       return;
     } else {
       axios.post(`${import.meta.env.VITE_API_URL}/notas/createNote`, {
-        titulo_nota: noteData.tituloNota,
-        descripcion_nota: noteData.descripcionNota,
+        titulo_nota: noteData.titulo_nota,
+        descripcion_nota: noteData.descripcion_nota,
         fecha_creacion_nota: fechaCreacionNota,
         id_usuario: getIdUser(),
         estado: 'ACTIVO'
       })
         .then((response) => {
           toast.success(`${response.data.message}`);
+          onCreateNoteSuccess();
         })
         .catch((error) => {
           toast.error(`${error.response.data.message}`);
         });
     
       // Limpiar los campos del formulario
-      setNoteData({
-        tituloNota: '',
-        descripcionNota: '',
-      });
+      setNoteData({} as OneNoteProps);
     
       // Cerrar el modal
       setShowModal(false);
     }
   };
 
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setNoteData({} as OneNoteProps);
+    onResetNota();  
+  };
+
+  const handleUpdateNote = () => {
+    planificaTechApi.put(`/notas/updateNote`, {
+      id_nota: id_nota,
+      titulo_nota: noteData.titulo_nota,
+      descripcion_nota: noteData.descripcion_nota,
+    })
+      .then((response) => {
+        toast.success(response.data.message);
+        onCreateNoteSuccess();
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+
+    // Limpiar los campos del formulario
+    setNoteData({} as OneNoteProps);
+
+    // Cerrar el modal
+    setShowModal(false);
+  };
+
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={onHide}>
       <Modal.Header closeButton>
         <Modal.Title>Crear Nota</Modal.Title>
       </Modal.Header>
@@ -67,8 +105,8 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
             <Form.Control 
               type="text" 
               placeholder="Ingrese el nombre de la nota" 
-              value={noteData.tituloNota}
-              onChange={(e) => setNoteData({...noteData, tituloNota: e.target.value})}
+              value={noteData.titulo_nota}
+              onChange={(e) => setNoteData({...noteData, titulo_nota: e.target.value})}
             />
           </Form.Group>
 
@@ -78,7 +116,11 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
               type="text" 
               readOnly
               placeholder="Fecha de Creación de la Nota"
-              value={fechaCreacionNota} 
+              value={
+                id_nota === 0 
+                  ? formatterDate(fechaCreacionNota) 
+                  : formatterDate(noteData.fecha_creacion_nota)
+              } 
             />
           </Form.Group>
 
@@ -88,18 +130,26 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal}) => {
               as="textarea" 
               rows={3} 
               placeholder="Ingrese la descripción de la nota"
-              value={noteData.descripcionNota}
-              onChange={(e) => setNoteData({...noteData, descripcionNota: e.target.value})}
+              value={noteData.descripcion_nota}
+              onChange={(e) => setNoteData({...noteData, descripcion_nota: e.target.value})}
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cerrar
+        <Button variant="secondary" onClick={handleCloseModal}>
+          Cerrar
         </Button>
-        <Button variant="primary" type="submit" onClick={handleSaveNote}>
-            Guardar
+        <Button 
+          variant="primary" 
+          type="submit" 
+          onClick={
+            id_nota === 0 
+              ? handleSaveNote 
+              : handleUpdateNote
+          }
+        >
+          {id_nota === 0 ? 'Guardar Nota' : 'Actualizar Nota'}
         </Button>
       </Modal.Footer>
     </Modal>

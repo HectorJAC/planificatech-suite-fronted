@@ -161,17 +161,17 @@ export const RegisterPage = () => {
   };
 
   const gotoLogin = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   return (
     <Background> 
-      <form onSubmit={handleCreateUser}>
+      <Form onSubmit={handleCreateUser}>
         <Container fluid>
           <Card className='bg-white my-5 mx-auto' style={{ borderRadius: '1rem', maxWidth: '1000px' }}>
             <Card.Body className='p-5 d-flex flex-column'>
               <h1 className='text-center mb-4'>
-                                Crear Usuario
+                Crear Usuario
               </h1>
 
               <Col md={4} className='mb-3'>
@@ -381,12 +381,12 @@ export const RegisterPage = () => {
               </Row>
 
               <Button size='lg' className="mb-2 w-100" type='submit'>
-                                Crear Usuario
+                Crear Usuario
               </Button>
             </Card.Body>
           </Card>
         </Container>
-      </form>
+      </Form>
       <ToastContainer />
     </Background>
   );

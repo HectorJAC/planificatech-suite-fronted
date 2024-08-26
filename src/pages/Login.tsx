@@ -15,13 +15,14 @@ import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 import { planificaTechApi } from '../api/baseApi';
 import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
+import { useCompanyStore } from '../store/companyStore';
 
 export const Login = () => {
-    
+  const navigate = useNavigate();
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
 
-  const navigate = useNavigate();
+  const { onSetCompany } = useCompanyStore();
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -56,8 +57,9 @@ export const Login = () => {
                   .then((response) => {
                     toast.success(`Bienvenido a ${response.data.nombre_empresa}`);
                     setTimeout(() => {
-                      navigate('/home');
+                      navigate('/');
                     }, 2000);
+                    onSetCompany({ ...response.data });
                   })
                   .catch((error) => {
                     toast.info(`${error.response.data.message}`);
@@ -85,16 +87,16 @@ export const Login = () => {
                   }
                 })
                   .then((response) => {
-                    toast.success(`Bienvenido a ${response.data[0].nombre_empresa}`);
-                    console.log(response);
+                    toast.success(`Bienvenido a ${response.data.nombre_empresa}`);
                     setTimeout(() => {
-                      navigate('/home');
+                      navigate('/');
                     }, 2000);
+                    onSetCompany({ ...response.data });
                   })
                   .catch((error) => {
                     toast.info(`${error.response.data.message}`);
                     setTimeout(() => {
-                      navigate('/');
+                      navigate('/login');
                     }, 2000);
                   });
               })
@@ -151,7 +153,7 @@ export const Login = () => {
                   </Form.Group>
 
                   <Button size='lg' className="mb-2 w-100" type='submit'>
-                                        Iniciar Sesión
+                    Iniciar Sesión
                   </Button>
 
                   <Form.Text
@@ -159,7 +161,7 @@ export const Login = () => {
                     style={{ cursor: 'pointer' }}
                     onClick={gotoForgetPassword}
                   >
-                                        ¿Ha olvidado su contraseña?
+                    ¿Ha olvidado su contraseña?
                   </Form.Text>
 
                   <Form.Text
@@ -167,7 +169,7 @@ export const Login = () => {
                     style={{ cursor: 'pointer' }}
                     onClick={gotoRegisterUser}
                   >
-                                        ¿No tienes una cuenta?, Crea una
+                    ¿No tienes un usuario?, Crea uno
                   </Form.Text>
                 </Card.Body>
               </Card>

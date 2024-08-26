@@ -48,7 +48,7 @@ export const ForgetPasswordPage = () => {
   };       
     
   const gotoLogin = () => {
-    navigate('/');
+    navigate('/login');
   };
 
   return (

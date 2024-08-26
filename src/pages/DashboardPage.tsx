@@ -5,21 +5,12 @@ import { CategoryScale } from "chart.js/auto";
 import { BarChart } from "../components/BarChart";
 import { Layout } from "../layout/Layout";
 import { planificaTechApi } from "../api/baseApi";
-import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
-import { CompanyProps } from "../interfaces/companyInteface";
+import { EmployeesProps } from "../interfaces/employeeInterface";
+import { useCompanyStore } from "../store/companyStore";
 
 interface ChartDataProps {
     departamento: string;
     cantidad_empleados: number;
-}
-
-interface EmployeeDataProps {
-    employees: {
-        cedula: string;
-        nombres: string;
-        apellidos: string;
-        nombre_departamento: string;
-    }[]
 }
 
 Chart.register(CategoryScale);
@@ -37,22 +28,13 @@ export const DashboardPage = () => {
     ],
   });
 
-  const [companyData, setCompanyData] = useState<CompanyProps>();
-  const [employees, setEmployees] = useState<EmployeeDataProps>();
+  const [employees, setEmployees] = useState<EmployeesProps>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(4);
 
-  useEffect(() => {
-    const getCompanyData = async () => {
-      findCompanyByDirector()
-        .then((response) => {
-          setCompanyData(response);
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
+  const { company } = useCompanyStore();
 
+  useEffect(() => {
     const getGraphData = async () => {
       planificaTechApi.get(`${import.meta.env.VITE_API_URL}/departamentos/getEmpleadosPorDepartamento`)
         .then((response) => {
@@ -75,7 +57,6 @@ export const DashboardPage = () => {
     const getEmployees = async (page:number, limit:number) => {
       planificaTechApi.get(`${import.meta.env.VITE_API_URL}/empleados/getAllEmployees`, {
         params: {
-          id_empresa: companyData?.id_empresa,
           page: page,
           limit: limit,
         }
@@ -87,11 +68,9 @@ export const DashboardPage = () => {
           console.log(error);
         });
     };
-
-    getCompanyData();
     getGraphData();
     getEmployees(page, limit);
-  }, [page, limit, companyData?.id_empresa]);
+  }, [page, limit, company.id_empresa]);
 
   return (
     <Layout>
@@ -101,7 +80,7 @@ export const DashboardPage = () => {
             <Button
               style={{ marginBottom: "20px" }}
             >
-                            Actualizar
+              Actualizar
             </Button>
           </Col>
 
@@ -163,13 +142,13 @@ export const DashboardPage = () => {
               style={{ marginBottom: "20px" }}
               onClick={() => setPage(page - 1)}
             >
-                            Anterior
+              Anterior
             </Button>
             <Button
               style={{ marginBottom: "20px", marginLeft: "20px" }}
               onClick={() => setPage(page + 1)}
             >
-                            Siguiente
+              Siguiente
             </Button>
             <Button
               style={{ marginBottom: "20px", marginLeft: "20px" }}
@@ -205,12 +184,12 @@ export const DashboardPage = () => {
             <Button
               style={{ marginBottom: "20px" }}
             >
-                            Anterior
+              Anterior
             </Button>
             <Button
               style={{ marginBottom: "20px", marginLeft: "20px" }}
             >
-                            Siguiente
+              Siguiente
             </Button>
 
             <Table striped bordered hover>
@@ -224,7 +203,7 @@ export const DashboardPage = () => {
               <tbody>
                 {
                   employees?.employees.map((employee) => (
-                    <tr key={employee.cedula}>
+                    <tr key={employee.id_empleado}>
                       <td>{employee.nombres} {employee.apellidos}</td>
                       <td>{employee.cedula}</td>
                       <td>{employee.nombre_departamento}</td>

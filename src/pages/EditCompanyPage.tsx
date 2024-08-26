@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, useEffect } from "react";
+import { useState, ChangeEvent, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
@@ -9,12 +9,14 @@ import { CompanyProps } from "../interfaces/companyInteface";
 import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
 import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
 import { CustomBasicModal } from "../components/CustomBasicModal";
+import DatePicker from "react-datepicker";
+import { formatterDate } from "../helpers/formatters";
 
 export const EditCompanyPage = () => {
   const [companyData, setCompanyData] = useState<CompanyProps>({} as CompanyProps);
   const [showModal, setShowModal] = useState(false);
 
-  const getCompanyData = () => {
+  const getCompanyData = useCallback(() => {
     findCompanyByDirector()
       .then((response) => {
         setCompanyData(response);
@@ -22,11 +24,9 @@ export const EditCompanyPage = () => {
       .catch((error) => {
         console.log(error);
       });
-  };
-
-  useEffect(() => {
-    getCompanyData();
   }, []);
+
+  useEffect(getCompanyData, [getCompanyData]);
 
   const handleShowModalAceptarCancelar = () => {
     setShowModal(true);
@@ -35,13 +35,6 @@ export const EditCompanyPage = () => {
   const handleCloseModalAceptarCancelar = () => {
     setShowModal(false);
   };
-
-  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-  //     setCompanyData({
-  //         ...companyData,
-  //         [e.target.name]: e.target.value
-  //     });
-  // };
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -82,13 +75,24 @@ export const EditCompanyPage = () => {
     }
   };
 
+  const handleDateChange = (date:any) => {
+    if (date !== null) {
+      setCompanyData(prevState => ({
+        ...prevState,
+        fecha_fundacion: date
+      }));
+    } else {
+      toast.info('Ingrese una fecha')
+    }
+  };
+
   return (
     <Layout>
       <Container>
         <Row>
           <Col>
             <h1 className="mt-3 mb-4">
-                            Editar Empresa
+              Editar Empresa
             </h1>
           </Col>
         </Row>
@@ -156,11 +160,18 @@ export const EditCompanyPage = () => {
             <Col>
               <Form.Group>
                 <Form.Label className="mt-3">Fecha de fundación</Form.Label>
-                <Form.Control
-                  type="date"
-                  name="fecha_fundacion"
-                  value={companyData.fecha_fundacion}
-                  onChange={(e) => setCompanyData(prevState => ({ ...prevState, fecha_fundacion: e.target.value }))}
+                <br />
+                <DatePicker
+                  value={
+                    companyData.fecha_fundacion 
+                      ? formatterDate(companyData.fecha_fundacion)
+                      : undefined
+                  }
+                  required
+                  onChange={handleDateChange}
+                  dateFormat="dd/MM/yyyy"
+                  className="form-control"
+                  placeholderText="dd/mm/yyyy"
                 />
               </Form.Group>
             </Col>
@@ -212,7 +223,7 @@ export const EditCompanyPage = () => {
               </Form.Group>
             </Col>
           </Row>
-          <Button onClick={handleShowModalAceptarCancelar} className="mb-3">Guardar cambios</Button>
+          <Button onClick={handleShowModalAceptarCancelar} className="mt-3">Guardar cambios</Button>
         </Form>
 
         <CustomBasicModal 

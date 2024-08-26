@@ -5,17 +5,19 @@ import { CustomDownloadButton } from "../components/CustomDownloadButton";
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import { BarChart } from "../components/BarChart";
 import { PieChart } from "../components/PieChart";
-import { cantEmpleadosDepartamentos } from "../components/api/apiGraficas/cantEmpleadosDepartamentos";
 import { saveAs } from 'file-saver';
 import './styles/graphicsPage.css';
+import { cantEmpleadosDepartamentos } from "../api/graficas/departamentos/cantEmpleadosDepartamentos";
+import { cantEmpleadosPuestos} from "../api/graficas/empleados/cantEmpleadosPuestos";
+import { getUniqueRandomColor, usedColors } from '../helpers/dataGraphs';
 
 interface ChartDataProps {
-    labels: string[];
-    datasets: {
-        label: string;
-        data: number[];
-        backgroundColor: string[];
-    }[];
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string[];
+  }[];
 }
 
 export const GraphicsPage = () => {
@@ -56,19 +58,34 @@ export const GraphicsPage = () => {
     switch (e.target.value) {
     case "Cant de Empleados por Departamento":
       cantEmpleadosDepartamentos().then((data) => {
+        const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
         setChartData({
           labels: data?.labels || [],
           datasets: [
             {
               label: "Cant. empleados",
               data: data?.datasets[0]?.data || [],
-              backgroundColor: data?.datasets[0]?.backgroundColor as unknown as string[],
+              backgroundColor: colors,
             }
           ]
         });
       });
       break;
-      // Agrega casos para otros tipos de datos si es necesario
+    case "Cant de Empleados por Puesto":
+      cantEmpleadosPuestos().then((data) => {
+        const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
+        setChartData({
+          labels: data?.labels || [],
+          datasets: [
+            {
+              label: "Cant. empleados",
+              data: data?.datasets[0]?.data || [],
+              backgroundColor: colors,
+            }
+          ]
+        });
+      });
+      break;
     default:
       break;
     }
@@ -130,6 +147,7 @@ export const GraphicsPage = () => {
                     <Form.Select onChange={handleDatosChange}>
                       <option>Selecciona una opción</option>
                       <option value="Cant de Empleados por Departamento">Cant de Empleados por Departamento</option>
+                      <option value="Cant de Empleados por Puesto">Cant de Empleados por Puesto</option>
                     </Form.Select>
                   )
                 }

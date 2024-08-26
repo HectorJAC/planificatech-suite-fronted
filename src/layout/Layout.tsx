@@ -2,49 +2,59 @@ import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
-import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { getIdDirectorGeneral, getIdUser } from "../helpers/getLocalStorageData";
 import { planificaTechApi } from "../api/baseApi";
-import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
-import { CompanyProps } from "../interfaces/companyInteface";
+import { useCompanyStore } from "../store/companyStore";
 
 interface LayoutProps {
-    children: React.ReactNode;
+  children: React.ReactNode;
 }
 
 export const Layout = ({children}: LayoutProps) => {
 
-  const [companyData, setCompanyData] = useState<CompanyProps>();
-  const [nombreApellidoDirector, setNombreApellidoDirector] = useState<string>('');
+  const [nombreApellidoUsuario, setNombreApellidoUsuario] = useState<string>('');
+  const { company } = useCompanyStore();
 
   useEffect(() => {
-    findCompanyByDirector()
-      .then((response) => {
-        setCompanyData(response);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }, []);
-
-  useEffect(() => {
-    planificaTechApi.get('director_general/getDirectorGeneral', {
+    planificaTechApi.get('usuarios/getUser', {
       params: {
-        id_director_general: getIdDirectorGeneral()
+        id_usuario: getIdUser()
       }
     })
       .then((response) => {
-        setNombreApellidoDirector(response.data.nombres + ' ' + response.data.apellidos);
+        if (response.data.tipo_usuario === '1') {
+          planificaTechApi.get('director_general/getDirectorGeneral', {
+            params: {
+              id_director_general: getIdDirectorGeneral()
+            }
+          })
+            .then((response) => {
+              setNombreApellidoUsuario(response.data.nombres + ' ' + response.data.apellidos);
+            })
+            .catch((error) => {
+              console.log(`${error.response.data.message}`);
+            });
+        } else if (response.data.tipo_usuario === '2') {
+          planificaTechApi.get('gerentes/getGerenteById', {
+            params: {
+              id_gerente: getIdDirectorGeneral()
+            }
+          })
+            .then((response) => {
+              setNombreApellidoUsuario(response.data.nombres + ' ' + response.data.apellidos);
+            })
+            .catch((error) => {
+              console.log(`${error.response.data.message}`);
+            });
+        }
       })
-      .catch((error) => {
-        console.log(`${error.response.data.message}`);
-      });
   }, []);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', zIndex: 1, marginLeft: '200px', marginTop: '50px' }}>
       <Header 
-        companyName={companyData?.nombre_empresa} 
-        userName={nombreApellidoDirector}
+        companyName={company.nombre_empresa} 
+        userName={nombreApellidoUsuario}
       />
       <div style={{ display: 'flex', flex: 1 }}>
         <Sidebar />
