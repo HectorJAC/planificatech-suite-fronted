@@ -18,6 +18,11 @@ import { EmployeesPage } from "./pages/EmployeesPage";
 import { CreateEmployeePage } from "./pages/CreateEmployeePage";
 import { ConsultCompanyPage } from "./pages/ConsultCompanyPage";
 import { GraficasEmpleadosPage } from "./pages/GraficasEmpleadosPage";
+import { ProyectsPage } from "./pages/ProyectsPage";
+import { GraphicsProjectsPage } from "./pages/GraphicsProjectsPage";
+import { ConsultGraphicProjectPage } from "./pages/ConsultGraphicProjectPage";
+import { CreateProjectPage } from "./pages/CreateProjectPage";
+import { CreateProjectStepTwoPage } from "./pages/CreateProjectStepTwoPage";
 
 function App() {
   return (
@@ -42,6 +47,11 @@ function App() {
           <Route path='/create_employee' element={<CreateEmployeePage />} />
           <Route path='/consult_company' element={<ConsultCompanyPage />} />
           <Route path='/graphics_employees' element={<GraficasEmpleadosPage />} />
+          <Route path='/proyects' element={<ProyectsPage />} />
+          <Route path='/graphics_projects' element={<GraphicsProjectsPage />} />
+          <Route path='/consult_graphic_project' element={<ConsultGraphicProjectPage />} />
+          <Route path='/create_project' element={<CreateProjectPage />} />
+          <Route path='/create_project_step_two' element={<CreateProjectStepTwoPage />} />
         </Route>
       </Routes>
     </BrowserRouter>
