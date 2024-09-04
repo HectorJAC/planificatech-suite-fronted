@@ -62,7 +62,8 @@ export const Login = () => {
                     onSetCompany({ ...response.data });
                   })
                   .catch((error) => {
-                    toast.info(`${error.response.data.message}`);
+                    toast.info(`${error.response.data.message}. 
+                      Se le llevará a la página de creación de empresas`);
                     setTimeout(() => {
                       navigate('/new_company');
                     }, 2000);

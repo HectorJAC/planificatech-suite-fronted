@@ -9,3 +9,8 @@ export const formatterDate = (date: string | undefined) => {
 export const formatterCedula = (cedula: number) => {
   return cedula.toString().replace(/(\d{1,3})(\d{1,7})(\d{1})/, '$1-$2-$3');
 };
+
+export const getYearforDate = (date: string) => {
+  const newDate = new Date(date);
+  return newDate.getFullYear();
+};

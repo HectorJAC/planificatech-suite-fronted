@@ -13,6 +13,7 @@ import { EmployeesModal } from "../components/EmployeesModal";
 import { planificaTechApi } from "../api/baseApi";
 import { handleDataNull } from "../helpers/handleDataNull";
 import { useEmployeesStore } from "../store/employeesStore";
+import { useCompanyStore } from "../store/companyStore";
 
 export const EmployeesPage = () => {
   const navigate = useNavigate();
@@ -24,11 +25,12 @@ export const EmployeesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const { company } = useCompanyStore();
   const { onAddEmployee } = useEmployeesStore();
 
   const allEmployee = useCallback((pageNumber = 1) => {
     setIsLoading(true);
-    getEmployees(pageNumber, 7)
+    getEmployees(pageNumber, 7, company.id_empresa!)
       .then((response) => {
         setEmployees(response);
         setCurrentPage(pageNumber);
@@ -39,7 +41,7 @@ export const EmployeesPage = () => {
         console.log(error);
         setIsLoading(false);
       });
-  }, []);
+  }, [company.id_empresa]);
 
   useEffect(() => {
     allEmployee(1);

@@ -7,15 +7,8 @@ import { Layout } from "../layout/Layout";
 import { useCompanyStore } from "../store/companyStore";
 import { getUniqueRandomColor } from "../helpers/dataGraphs";
 import { cantProyectosEstado } from "../api/graficas/proyectos/cantProyectosEstado";
-
-// interface GraphicsProps {
-//   labels: string[];
-//   datasets: {
-//     label: string;
-//     data: number[];
-//     backgroundColor: string;
-//   }[];
-// }
+import { GraphicsProps } from "../interfaces/graphicsInterface";
+import { cantTareasEstado } from "../api/graficas/proyectos/cantTareasEstado";
 
 Chart.register(CategoryScale);
 
@@ -32,6 +25,7 @@ export const GraphicsProjectsPage = () => {
     ],
   });
 
+  const [chartDataTareas, setChartDataTareas] = useState<GraphicsProps>({...chartData});
   const { company } = useCompanyStore();
 
   useEffect(() => {
@@ -45,6 +39,29 @@ export const GraphicsProjectsPage = () => {
             datasets: [
               {
                 label: "Cant. proyectos",
+                data: data.datasets[0].data,
+                backgroundColor: colors,
+              }
+            ],
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [company.id_empresa]);
+
+  useEffect(() => {
+    cantTareasEstado()
+      .then((data) => {
+        const usedColors = new Set<string>();
+        const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
+        if (data) {
+          setChartDataTareas({
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Cant. tareas",
                 data: data.datasets[0].data,
                 backgroundColor: colors,
               }
@@ -73,13 +90,36 @@ export const GraphicsProjectsPage = () => {
           <Col className="mb-3">
             <Accordion>
               <Accordion.Item eventKey="0">
-                <Accordion.Header className="sidebar-header">Cantidad de Proyecto por Estado</Accordion.Header>
+                <Accordion.Header className="sidebar-header">Cantidad de Proyectos por Estado</Accordion.Header>
                 <Accordion.Body>
                   <BarChart 
                     title="Cantidad de proyectos por estado"
                     chartData={{
                       labels: chartData.labels,
                       datasets: chartData.datasets.map(dataset => ({
+                        label: dataset.label,
+                        data: dataset.data,
+                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                      })),
+                    }} 
+                  />
+                </Accordion.Body>
+              </Accordion.Item>
+            </Accordion>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col className="mb-3">
+            <Accordion>
+              <Accordion.Item eventKey="0">
+                <Accordion.Header className="sidebar-header">Cantidad de Tareas por Estado</Accordion.Header>
+                <Accordion.Body>
+                  <BarChart 
+                    title="Cantidad de tareas por estado"
+                    chartData={{
+                      labels: chartDataTareas.labels,
+                      datasets: chartDataTareas.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
                         backgroundColor: dataset.backgroundColor as unknown as string[],

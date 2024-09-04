@@ -7,9 +7,10 @@ import { EmployeesProps } from "../interfaces/employeeInterface";
 import { handleDataNull } from "../helpers/handleDataNull";
 import { FC, useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { useProjectStore } from "../store/projectStore";
+import { useProjectStore, useEmployeeOrDepartmentSuccessStore } from "../store/projectStore";
 import { addEmployeeToProject } from "../api/proyectos/addEmployeeToProject";
 import { planificaTechApi } from "../api/baseApi";
+import { useCompanyStore } from "../store/companyStore";
 
 interface AsignEmployeeProjectModalProps {
   showModal: boolean;
@@ -28,11 +29,13 @@ export const AsignEmployeeProjectModal:FC<AsignEmployeeProjectModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [searchEmployee, setSearchEmployee] = useState('');
 
+  const { company} = useCompanyStore();
   const { id_proyecto } = useProjectStore();
+  const { onAddingEmployeeDepartmentSuccess } = useEmployeeOrDepartmentSuccessStore();
 
   const allEmployee = useCallback((pageNumber = 1) => {
     setIsLoading(true);
-    getEmployees(pageNumber, 7)
+    getEmployees(pageNumber, 7, company.id_empresa!)
       .then((response) => {
         setEmployees(response);
         setCurrentPage(pageNumber);
@@ -43,7 +46,7 @@ export const AsignEmployeeProjectModal:FC<AsignEmployeeProjectModalProps> = ({
         console.log(error);
         setIsLoading(false);
       });
-  }, []);
+  }, [company.id_empresa]);
 
   useEffect(() => {
     allEmployee(1);
@@ -65,6 +68,7 @@ export const AsignEmployeeProjectModal:FC<AsignEmployeeProjectModalProps> = ({
     addEmployeeToProject(id_proyecto, id_empleado)
       .then((response) => {
         toast.success(response.message);
+        onAddingEmployeeDepartmentSuccess();
         setShowModal(false);
       })
       .catch((error) => {

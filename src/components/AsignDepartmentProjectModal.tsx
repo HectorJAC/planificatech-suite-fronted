@@ -3,7 +3,7 @@ import { CustomButton } from "../components/CustomButton";
 import { EditIcon } from "../helpers/iconButtons";
 import { FC, useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
-import { useProjectStore } from "../store/projectStore";
+import { useProjectStore, useEmployeeOrDepartmentSuccessStore } from "../store/projectStore";
 import { planificaTechApi } from "../api/baseApi";
 import { DepartmentsProps } from "../interfaces/departmentInterface";
 import { useCompanyStore } from "../store/companyStore";
@@ -29,6 +29,7 @@ export const AsignDepartmentProjectModal:FC<AsignDepartmentProjectModalProps> = 
   const [gerentes, setGerentes] = useState<GerentesProps>();
 
   const { id_proyecto } = useProjectStore();
+  const { onAddingEmployeeDepartmentSuccess } = useEmployeeOrDepartmentSuccessStore();
   const { company } = useCompanyStore();
 
   const getAllDepartments = useCallback((pageNumber = 1) => {
@@ -91,6 +92,7 @@ export const AsignDepartmentProjectModal:FC<AsignDepartmentProjectModalProps> = 
     addDepartmentToProject(id_proyecto, id_departamento)
       .then((response) => {
         toast.success(response.message);
+        onAddingEmployeeDepartmentSuccess();
         setShowModal(false);
       })
       .catch((error) => {
@@ -210,7 +212,7 @@ export const AsignDepartmentProjectModal:FC<AsignDepartmentProjectModalProps> = 
               onClick={handlePreviousPage} 
               disabled={currentPage === 1}
             >
-                    Anterior
+              Anterior
             </Button>
             <span>Página {currentPage} de {totalPages}</span>
             <Button 
@@ -218,7 +220,7 @@ export const AsignDepartmentProjectModal:FC<AsignDepartmentProjectModalProps> = 
               onClick={handleNextPage} 
               disabled={currentPage === totalPages}
             >
-                    Siguiente
+              Siguiente
             </Button>
           </Col>
         </Row>

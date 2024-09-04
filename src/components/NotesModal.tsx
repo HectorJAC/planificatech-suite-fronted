@@ -22,18 +22,20 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal, onHide}
   const [noteData, setNoteData] = useState<OneNoteProps>({} as OneNoteProps);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/notas/getNote`, {
-      params: {
-        id_nota: id_nota
-      }
-    })
-      .then((response) => {
-        setNoteData(response.data);
+    if (showModal) {
+      planificaTechApi.get('/notas/getNote', {
+        params: {
+          id_nota: id_nota
+        }
       })
-      .catch((error) => {
-        toast.error(error);
-      });
-  }, [id_nota])
+        .then((response) => {
+          setNoteData(response.data);
+        })
+        .catch((error) => {
+          toast.error(error);
+        });
+    }
+  }, [id_nota, showModal]);
 
   // Función para obtener la fecha de creación de la nota
   const fechaCreacionNota = new Date().toLocaleDateString();

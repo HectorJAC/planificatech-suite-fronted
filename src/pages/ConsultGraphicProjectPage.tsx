@@ -79,7 +79,9 @@ export const ConsultGraphicProjectPage = () => {
               style={{ cursor: 'pointer' }}
               onClick={() => window.history.back()}
             >
-              <FaAngleLeft/> Volver
+              <h2>
+                <FaAngleLeft/> Volver
+              </h2>
             </Form.Text>
             <h1 className="mt-3 mb-4">
               Gráficas del Proyecto: {oneProjectData.nombre_proyecto}

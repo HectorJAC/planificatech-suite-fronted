@@ -35,18 +35,20 @@ export const ConsultProjectModal: FC<ConsultProjectModalProps> = ({
   }, [idProyecto, showModal]);
 
   const projectDepartmentData = useCallback(() => {
-    if (oneProjectData.tipo_proyecto === 1) {
-      getOneProjectDepartment(idProyecto)
-        .then((response) => {
-          setProjectData(response);
-        });
-    } else {
-      getOneProjectEmployee(idProyecto)
-        .then((response) => {
-          setProjectData(response);
-        });
+    if (showModal) {
+      if (oneProjectData.tipo_proyecto === 1) {
+        getOneProjectDepartment(idProyecto)
+          .then((response) => {
+            setProjectData(response);
+          });
+      } else {
+        getOneProjectEmployee(idProyecto)
+          .then((response) => {
+            setProjectData(response);
+          });
+      }
     }
-  }, [idProyecto, oneProjectData.tipo_proyecto]);
+  }, [idProyecto, oneProjectData.tipo_proyecto, showModal]);
 
   useEffect(projectDepartmentData, [projectDepartmentData]);
 
@@ -61,20 +63,18 @@ export const ConsultProjectModal: FC<ConsultProjectModalProps> = ({
   );
 
   const renderTasksByStatus = (status: string) => {
-    // Filtrar tareas duplicadas por id_tarea_plan
     const uniqueTasks = projectData.filter(
       (task, index, self) =>
-        index === self.findIndex((t) => t.id_tarea_plan === task.id_tarea_plan)
+        index === self.findIndex((t) => t.id_tarea_proyecto === task.id_tarea_proyecto)
     );
 
     return uniqueTasks
       .filter((proyect) => proyect.estado_tarea_proyecto === status)
       .map((proyect) => (
-        <Card key={proyect.id_tarea_plan} className="mb-4">
+        <Card key={proyect.id_tarea_proyecto} className="mb-4">
           <Card.Body>
             <Card.Title>{proyect.nombre_tarea_proyecto}</Card.Title>
             <Card.Text>{proyect.descripcion_tarea_proyecto}</Card.Text>
-            <Card.Text>{proyect.estado_tarea_proyecto}</Card.Text>
           </Card.Body>
         </Card>
       ));
@@ -148,7 +148,7 @@ export const ConsultProjectModal: FC<ConsultProjectModalProps> = ({
             <Row className="mb-3">
               <Col md={6}>
                 <strong>Presupuesto Asignado:</strong>
-                <p>{proyect.presupuesto_asigando}</p>
+                <p>{proyect.presupuesto_asignado}</p>
               </Col>
               <Col md={6}>
                 <strong>Estado Proyecto:</strong>
@@ -163,19 +163,19 @@ export const ConsultProjectModal: FC<ConsultProjectModalProps> = ({
             <Row>
               <Col md={4}>
                 <h3>En Espera</h3>
-                <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+                <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                   {renderTasksByStatus("En Espera")}
                 </div>
               </Col>
               <Col md={4}>
                 <h3>Trabajando</h3>
-                <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+                <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                   {renderTasksByStatus("Trabajando")}
                 </div>
               </Col>
               <Col md={4}>
                 <h3>Finalizado</h3>
-                <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+                <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                   {renderTasksByStatus("Finalizado")}
                 </div>
               </Col>

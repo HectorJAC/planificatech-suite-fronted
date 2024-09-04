@@ -11,15 +11,7 @@ import { cantEmpleadosFechaIngreso } from "../api/graficas/empleados/cantEmplead
 import { getUniqueRandomColor } from "../helpers/dataGraphs";
 import { cantEmpleadosDepartamentos } from '../api/graficas/departamentos/cantEmpleadosDepartamentos';
 import { cantEmpleadosSalario } from '../api/graficas/empleados/cantEmpleadosSalario';
-
-interface GraphicsProps {
-  labels: string[];
-  datasets: {
-    label: string;
-    data: number[];
-    backgroundColor: string;
-  }[];
-}
+import { GraphicsProps } from "../interfaces/graphicsInterface";
 
 Chart.register(CategoryScale);
 

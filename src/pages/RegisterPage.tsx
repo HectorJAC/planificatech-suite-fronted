@@ -14,6 +14,7 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
+import DatePicker from 'react-datepicker';
 
 interface EmpresaProps {
     id_empresa: number;
@@ -61,6 +62,22 @@ export const RegisterPage = () => {
     const company = empresa.find((empresa) => empresa.id_empresa === parseInt(e.target.value));
     if (company) {
       setEmpresa([company]);
+    }
+  };
+
+  const handleDateEnterChange = (date:any) => {
+    if (date !== null) {
+      setFechaIngresoEmpresa(date);
+    } else {
+      toast.info('Ingrese una fecha')
+    }
+  };
+
+  const handleBirthDateChange = (date:any) => {
+    if (date !== null) {
+      setFechaNacimiento(date);
+    } else {
+      toast.info('Ingrese una fecha')
     }
   };
 
@@ -262,12 +279,28 @@ export const RegisterPage = () => {
 
                   {
                     tipoUsuario === '2' && (
-                      <Form.Group className='mb-4'>
+                      <Form.Group className="mb-4">
                         <Form.Label><CustomAsterisk/> Fecha de Ingreso a la Empresa</Form.Label>
-                        <Form.Control 
-                          type='date'
-                          value={fechaIngresoEmpresa}
-                          onChange={(e) => setFechaIngresoEmpresa(e.target.value)} 
+                        <br />
+                        <DatePicker
+                          selected={
+                            fechaIngresoEmpresa 
+                              ? new Date(fechaIngresoEmpresa)
+                              : null
+                          }
+                          required
+                          onChange={handleDateEnterChange}
+                          dateFormat="dd/MM/yyyy"
+                          className="form-control"
+                          placeholderText="dd/mm/yyyy"
+                          customInput={
+                            <Form.Control 
+                              type="text"
+                              required
+                              value={fechaIngresoEmpresa}
+                              onChange={handleDateEnterChange}
+                            />
+                          }
                         />
                       </Form.Group>
                     )
@@ -304,12 +337,28 @@ export const RegisterPage = () => {
                     />
                   </Form.Group>
 
-                  <Form.Group className='mb-4'>
-                    <Form.Label>Fecha de Nacimiento</Form.Label>
-                    <Form.Control 
-                      type='date'
-                      value={fechaNacimiento}
-                      onChange={(e) => setFechaNacimiento(e.target.value)} 
+                  <Form.Group className="mb-4">
+                    <Form.Label><CustomAsterisk/> Fecha de Nacimiento</Form.Label>
+                    <br />
+                    <DatePicker
+                      selected={
+                        fechaNacimiento 
+                          ? new Date(fechaNacimiento)
+                          : null
+                      }
+                      required
+                      onChange={handleBirthDateChange}
+                      dateFormat="dd/MM/yyyy"
+                      className="form-control"
+                      placeholderText="dd/mm/yyyy"
+                      customInput={
+                        <Form.Control 
+                          type="text"
+                          required
+                          value={fechaNacimiento}
+                          onChange={handleBirthDateChange}
+                        />
+                      }
                     />
                   </Form.Group>
 

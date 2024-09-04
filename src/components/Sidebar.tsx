@@ -33,15 +33,19 @@ export const Sidebar:FC = () => {
 
   return (
     <Accordion className="sidebar" activeKey={state.openSection} onSelect={(eventKey) => handleSectionClick(eventKey as string)}>
-      <Accordion.Item eventKey="0">
-        <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
-        <CustomSideBarItem 
-          linkText="Dashboard"
-          linkPath="/dashboard"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Dashboard')}
-        />
-      </Accordion.Item>
+      {
+        user.tipo_usuario === '1' && (
+          <Accordion.Item eventKey="0">
+            <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
+            <CustomSideBarItem 
+              linkText="Dashboard"
+              linkPath="/dashboard"
+              activeOption={state.activeOption}
+              handleActiveOption={() => handleActiveOption('Dashboard')}
+            />
+          </Accordion.Item>
+        )
+      }
 
       {
         user.tipo_usuario === '1' && (
@@ -102,10 +106,10 @@ export const Sidebar:FC = () => {
           )
         }
         <CustomSideBarItem 
-          linkText="Consultas Departamento"
+          linkText="Gráficas Departamentos"
           linkPath="/"
           activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Consultas Departamento')}
+          handleActiveOption={() => handleActiveOption('Gráficas Departamentos')}
         />
       </Accordion.Item>
 

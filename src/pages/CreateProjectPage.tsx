@@ -14,6 +14,8 @@ import { getOneProjectData } from "../api/proyectos/getOneProjectData";
 import { useCompanyStore } from "../store/companyStore";
 import { getAllGerentesNoPagination } from "../api/gerentes/getAllGerentesNoPagination";
 import { GerenteProps } from "../interfaces/gerenteInterface";
+import { updateProject } from "../api/proyectos/updateProject";
+import { createProject } from "../api/proyectos/createProject";
 
 export const CreateProjectPage = () => {
   const navigate = useNavigate();
@@ -78,14 +80,54 @@ export const CreateProjectPage = () => {
 
   const handleCreateProject = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onAddProject(projectData.id_proyecto!);
-    navigate('/create_project_step_two');
+    createProject(
+      projectData.nombre_proyecto!,
+      projectData.descripcion_proyecto!,
+      projectData.fecha_inicio!,
+      projectData.fecha_fin || null,
+      projectData.presupuesto_asignado || null,
+      projectData.tipo_proyecto!,
+      projectData.id_gerente!,
+      company.id_empresa!,
+      projectData.estado_proyecto!,
+    )
+      .then((response) => {
+        toast.success('Proyecto creado con exito');
+        setTimeout(() => {
+          onAddProject(response.proyecto.id_proyecto);
+          navigate('/create_project_step_two');
+        }, 1500);
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error(error.response.data.message);
+      });
   };
 
   const handleUpdateProject = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // onAddProject(projectData.id_proyecto!);
-    navigate('/create_project_step_two');
+    updateProject(
+      id_proyecto,
+      projectData.nombre_proyecto!,
+      projectData.descripcion_proyecto!,
+      projectData.fecha_inicio!,
+      projectData.fecha_fin!,
+      projectData.presupuesto_asignado!,
+      projectData.tipo_proyecto!,
+      projectData.id_gerente!,
+      projectData.id_empresa!,
+      projectData.estado_proyecto!,
+    )
+      .then(() => {
+        toast.success('Proyecto actualizado con exito');
+        setTimeout(() => {
+          onAddProject(projectData.id_proyecto!);
+          navigate('/create_project_step_two');
+        }, 1500);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
   };
 
   return (
@@ -109,7 +151,7 @@ export const CreateProjectPage = () => {
                     <h1 className="mt-3 mb-4">
                       {
                         projectData.id_proyecto
-                          ? `Editar Proyecto - Paso 1 - Datos Generales: ${projectData.id_proyecto} ${projectData.nombre_proyecto}`
+                          ? `Editar Proyecto - Paso 1 - Datos Generales: ${projectData.id_proyecto} - ${projectData.nombre_proyecto}`
                           : 'Crear Proyecto - Paso 1 - Datos Generales'
                       }
                     </h1>
@@ -119,7 +161,7 @@ export const CreateProjectPage = () => {
                 <Row>
                   <Col md={4}>
                     <Form.Group className='mb-4'>
-                      <Form.Label><CustomAsterisk/> Id Proyecto</Form.Label>
+                      <Form.Label>Id Proyecto</Form.Label>
                       <Form.Control 
                         type='text'
                         disabled
@@ -136,7 +178,7 @@ export const CreateProjectPage = () => {
                             ? new Date(projectData.fecha_inicio)
                             : null
                         }
-                        // required
+                        required
                         onChange={handleStartDateChange}
                         dateFormat="dd/MM/yyyy"
                         className="form-control"
@@ -144,7 +186,7 @@ export const CreateProjectPage = () => {
                         customInput={
                           <Form.Control 
                             type="text"
-                            // required
+                            required
                             value={projectData.fecha_inicio}
                             onChange={handleStartDateChange}
                           />
@@ -153,18 +195,18 @@ export const CreateProjectPage = () => {
                     </Form.Group>
 
                     <Form.Group className='mb-4'>
-                      <Form.Label><CustomAsterisk/> Presupuesto Asignado</Form.Label>
+                      <Form.Label>Presupuesto Asignado</Form.Label>
                       <Form.Control 
                         type='number'
-                        // required
-                        value={projectData.presupuesto_asigando}
-                        onChange={(e) => setProjectData(prevState => ({ ...prevState, presupuesto_asigando: Number(e.target.value) }))}
+                        value={projectData.presupuesto_asignado}
+                        onChange={(e) => setProjectData(prevState => ({ ...prevState, presupuesto_asignado: Number(e.target.value) }))}
                       />
                     </Form.Group>
 
                     <Form.Group className='mb-4'>
                       <Form.Label><CustomAsterisk/> Gerente Encargado</Form.Label>
                       <Form.Select
+                        required
                         value={projectData.id_gerente}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => {
                           setProjectData({
@@ -192,12 +234,12 @@ export const CreateProjectPage = () => {
                         type='text'
                         value={projectData.nombre_proyecto}
                         onChange={(e) => setProjectData(prevState => ({ ...prevState, nombre_proyecto: e.target.value }))} 
-                        // required
+                        required
                       />
                     </Form.Group>
 
                     <Form.Group className="mb-4">
-                      <Form.Label><CustomAsterisk/> Fecha Fin</Form.Label>
+                      <Form.Label>Fecha Fin</Form.Label>
                       <br />
                       <DatePicker
                         selected={
@@ -205,7 +247,6 @@ export const CreateProjectPage = () => {
                             ? new Date(projectData.fecha_fin )
                             : null
                         }
-                        // required
                         onChange={handleEndDateChange}
                         dateFormat="dd/MM/yyyy"
                         className="form-control"
@@ -213,7 +254,6 @@ export const CreateProjectPage = () => {
                         customInput={
                           <Form.Control 
                             type="text"
-                            // required
                             value={projectData.fecha_fin }
                             onChange={handleEndDateChange}
                           />
@@ -224,10 +264,11 @@ export const CreateProjectPage = () => {
                     <Form.Group className='mb-4'>
                       <Form.Label><CustomAsterisk/> Estado Proyecto</Form.Label>
                       <Form.Select
-                        // required
+                        required
                         value={projectData.estado_proyecto}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => setProjectData(prevState => ({ ...prevState, estado_proyecto: e.target.value }))}
                       >
+                        <option value="">-- Seleccione una opción --</option>
                         <option value="En Espera">En Espera</option>
                         <option value="Trabajando">Trabajando</option>
                         <option value="Finalizado">Finalizado</option>
@@ -240,7 +281,7 @@ export const CreateProjectPage = () => {
                       <Form.Label><CustomAsterisk/> Descripcion Proyecto</Form.Label>
                       <textarea
                         className="form-control"
-                        // required
+                        required
                         value={projectData.descripcion_proyecto}
                         onChange={(e) => setProjectData(prevState => ({ ...prevState, descripcion_proyecto: e.target.value }))}
                       />
@@ -249,7 +290,7 @@ export const CreateProjectPage = () => {
                     <Form.Group className='mb-4'>
                       <Form.Label><CustomAsterisk/> Tipo Proyecto</Form.Label>
                       <Form.Select
-                        // required
+                        required
                         value={projectData.tipo_proyecto}
                         onChange={(e: ChangeEvent<HTMLSelectElement>) => setProjectData(prevState => ({ ...prevState, tipo_proyecto: Number(e.target.value) }))}
                       >
@@ -286,6 +327,16 @@ export const CreateProjectPage = () => {
                   <Col md={4}>
                     <Button 
                       type="submit"
+                      variant="secondary"
+                      hidden={!id_proyecto}
+                      style={{marginRight: '5px'}}
+                      onClick={() => navigate('/create_project_step_two')}
+                    >
+                      Omitir
+                    </Button>
+
+                    <Button 
+                      type="submit"
                       variant="primary"
                     >
                       {id_proyecto ? 'Actualizar' : 'Continuar'}
@@ -295,7 +346,7 @@ export const CreateProjectPage = () => {
 
                 <CustomBasicModal 
                   title="Cancelar Operación"
-                  body="¿Desea volver atras? Se perderán los datos ingresados."
+                  body="¿Desea volver atrás?"
                   secondaryButton="Cancelar"
                   primaryButton="Aceptar"
                   showModal={showCancelModal}

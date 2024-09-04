@@ -23,6 +23,7 @@ import { GraphicsProjectsPage } from "./pages/GraphicsProjectsPage";
 import { ConsultGraphicProjectPage } from "./pages/ConsultGraphicProjectPage";
 import { CreateProjectPage } from "./pages/CreateProjectPage";
 import { CreateProjectStepTwoPage } from "./pages/CreateProjectStepTwoPage";
+import { CreateProjectStepThreePage } from "./pages/CreateProjectStepThreePage";
 
 function App() {
   return (
@@ -52,6 +53,7 @@ function App() {
           <Route path='/consult_graphic_project' element={<ConsultGraphicProjectPage />} />
           <Route path='/create_project' element={<CreateProjectPage />} />
           <Route path='/create_project_step_two' element={<CreateProjectStepTwoPage />} />
+          <Route path='/create_project_step_three' element={<CreateProjectStepThreePage />} />
         </Route>
       </Routes>
     </BrowserRouter>

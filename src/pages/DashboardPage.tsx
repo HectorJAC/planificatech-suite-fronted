@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Table } from "react-bootstrap";
-import Chart from "chart.js/auto";
-import { CategoryScale } from "chart.js/auto";
+import Chart, { CategoryScale } from "chart.js/auto";
 import { BarChart } from "../components/BarChart";
 import { Layout } from "../layout/Layout";
 import { planificaTechApi } from "../api/baseApi";
 import { EmployeesProps } from "../interfaces/employeeInterface";
 import { useCompanyStore } from "../store/companyStore";
-
-interface ChartDataProps {
-    departamento: string;
-    cantidad_empleados: number;
-}
+import { cantProyectosEstado } from "../api/graficas/proyectos/cantProyectosEstado";
+import { getUniqueRandomColor } from "../helpers/dataGraphs";
+import { GraphicsProps } from "../interfaces/graphicsInterface";
+import { cantEmpleadosDepartamentos } from "../api/graficas/departamentos/cantEmpleadosDepartamentos";
+import { TableProjectsByStatus } from "../components/TableProjectsByStatus";
 
 Chart.register(CategoryScale);
 
@@ -28,6 +27,7 @@ export const DashboardPage = () => {
     ],
   });
 
+  const [chartDataProyectos, setChartDataProyectos] = useState<GraphicsProps>({...chartData});
   const [employees, setEmployees] = useState<EmployeesProps>();
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(4);
@@ -35,30 +35,35 @@ export const DashboardPage = () => {
   const { company } = useCompanyStore();
 
   useEffect(() => {
-    const getGraphData = async () => {
-      planificaTechApi.get(`${import.meta.env.VITE_API_URL}/departamentos/getEmpleadosPorDepartamento`)
-        .then((response) => {
+    cantEmpleadosDepartamentos()
+      .then((data) => {
+        const usedColors = new Set<string>();
+        const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
+        if (data) {
           setChartData({
-            labels: response.data.map((data: ChartDataProps) => data.departamento),
+            labels: data.labels,
             datasets: [
               {
                 label: "Cant. empleados",
-                data: response.data.map((data: ChartDataProps) => data.cantidad_empleados),
-                backgroundColor: "rgba(54, 162, 235, 0.6)",
+                data: data.datasets[0].data,
+                backgroundColor: colors,
               }
             ],
           });
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    };
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
+  useEffect(() => {
     const getEmployees = async (page:number, limit:number) => {
-      planificaTechApi.get(`${import.meta.env.VITE_API_URL}/empleados/getAllEmployees`, {
+      planificaTechApi.get('/empleados/getAllEmployees', {
         params: {
           page: page,
           limit: limit,
+          id_empresa: company.id_empresa!
         }
       })
         .then((response) => {
@@ -68,9 +73,31 @@ export const DashboardPage = () => {
           console.log(error);
         });
     };
-    getGraphData();
     getEmployees(page, limit);
   }, [page, limit, company.id_empresa]);
+
+  useEffect(() => {
+    cantProyectosEstado(company.id_empresa!)
+      .then((data) => {
+        const usedColors = new Set<string>();
+        const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
+        if (data) {
+          setChartDataProyectos({
+            labels: data.labels,
+            datasets: [
+              {
+                label: "Cant. proyectos",
+                data: data.datasets[0].data,
+                backgroundColor: colors,
+              }
+            ],
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [company.id_empresa]);
 
   return (
     <Layout>
@@ -90,8 +117,9 @@ export const DashboardPage = () => {
               chartData={{
                 labels: chartData.labels,
                 datasets: chartData.datasets.map(dataset => ({
-                  ...dataset,
-                  backgroundColor: [dataset.backgroundColor],
+                  label: dataset.label,
+                  data: dataset.data,
+                  backgroundColor: dataset.backgroundColor as unknown as string[],
                 })),
               }} 
             />
@@ -103,8 +131,23 @@ export const DashboardPage = () => {
               chartData={{
                 labels: chartData.labels,
                 datasets: chartData.datasets.map(dataset => ({
-                  ...dataset,
-                  backgroundColor: [dataset.backgroundColor],
+                  label: dataset.label,
+                  data: dataset.data,
+                  backgroundColor: dataset.backgroundColor as unknown as string[],
+                })),
+              }} 
+            />
+          </Col>
+
+          <Col md={6} className="mb-3">
+            <BarChart 
+              title="Cantidad de proyectos por estado"
+              chartData={{
+                labels: chartDataProyectos.labels,
+                datasets: chartDataProyectos.datasets.map(dataset => ({
+                  label: dataset.label,
+                  data: dataset.data,
+                  backgroundColor: dataset.backgroundColor as unknown as string[],
                 })),
               }} 
             />
@@ -116,27 +159,15 @@ export const DashboardPage = () => {
               chartData={{
                 labels: chartData.labels,
                 datasets: chartData.datasets.map(dataset => ({
-                  ...dataset,
-                  backgroundColor: [dataset.backgroundColor],
+                  label: dataset.label,
+                  data: dataset.data,
+                  backgroundColor: dataset.backgroundColor as unknown as string[],
                 })),
               }} 
             />
           </Col>
 
           <Col md={6} className="mb-3">
-            <BarChart 
-              title="Cantidad de empleados por departamentos"
-              chartData={{
-                labels: chartData.labels,
-                datasets: chartData.datasets.map(dataset => ({
-                  ...dataset,
-                  backgroundColor: [dataset.backgroundColor],
-                })),
-              }} 
-            />
-          </Col>
-
-          <Col md={6}>
 
             <Button
               style={{ marginBottom: "20px" }}
@@ -179,41 +210,23 @@ export const DashboardPage = () => {
             </Table>
           </Col>
 
-          <Col md={6}>
-
-            <Button
-              style={{ marginBottom: "20px" }}
-            >
-              Anterior
-            </Button>
-            <Button
-              style={{ marginBottom: "20px", marginLeft: "20px" }}
-            >
-              Siguiente
-            </Button>
-
-            <Table striped bordered hover>
-              <thead>
-                <tr>
-                  <th>Nombres y apellidos</th>
-                  <th>Cedula</th>
-                  <th>Departamento</th>
-                </tr>
-              </thead>
-              <tbody>
-                {
-                  employees?.employees.map((employee) => (
-                    <tr key={employee.id_empleado}>
-                      <td>{employee.nombres} {employee.apellidos}</td>
-                      <td>{employee.cedula}</td>
-                      <td>{employee.nombre_departamento}</td>
-                    </tr>
-                  ))
-                }
-              </tbody>
-            </Table>
+          <Col md={6} className="mb-3">
+            <TableProjectsByStatus 
+              estadoProyecto='Trabajando'
+            />
           </Col>
 
+          <Col md={6} className="mb-3">
+            <TableProjectsByStatus 
+              estadoProyecto='En Espera'
+            />
+          </Col>
+
+          <Col md={6} className="mb-3">
+            <TableProjectsByStatus 
+              estadoProyecto='Finalizado'
+            />
+          </Col>
         </Row>
       </Container>
     </Layout>

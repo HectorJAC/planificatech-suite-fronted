@@ -1,7 +1,7 @@
 import { Button, Card, Col, Container, Form, Row } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
-import { useCallback, useEffect, useState } from "react";
-import { ToastContainer } from "react-toastify";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
 import { CustomButton } from "../components/CustomButton";
 import { formatterDate } from "../helpers/formatters";
 import { Spinner } from "../components/Spinner";
@@ -12,6 +12,9 @@ import { ProyectsProps } from "../interfaces/proyectsInterface";
 import { ConsultProjectModal } from "../components/ConsultProjectModal";
 import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "../store/projectStore";
+import { planificaTechApi } from "../api/baseApi";
+import { updateProject } from "../api/proyectos/updateProject";
+import { getCantProjectsByStatus } from "../api/proyectos/getCantProjectByStatus";
 
 export const ProyectsPage = () => {
 
@@ -20,9 +23,13 @@ export const ProyectsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(null);
+  const [searchProject, setSearchProject] = useState('');
+  const [cantProyectsTrabajando, setCantProyectsTrabajando] = useState();
+  const [cantProyectsEspera, setCantProyectsEspera] = useState();
+  const [cantProyectsFinalizado, setCantProyectsFinalizado] = useState();
 
   const { company } = useCompanyStore();
-  const { onAddProject } = useProjectStore();
+  const { onAddProject, onResetProject } = useProjectStore();
 
   const allProyects = useCallback(() => {
     setIsLoading(true);
@@ -39,6 +46,46 @@ export const ProyectsPage = () => {
 
   useEffect(allProyects, [allProyects]);
 
+  const getCantProjectsTrabajando = useCallback(() => {
+    getCantProjectsByStatus(company.id_empresa!, 'Trabajando')
+      .then((response) => {
+        setCantProyectsTrabajando(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [company.id_empresa]);
+
+  const getCantProjectsEspera = useCallback(() => {
+    getCantProjectsByStatus(company.id_empresa!, 'En Espera')
+      .then((response) => {
+        setCantProyectsEspera(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [company.id_empresa]);
+
+  const getCantProjectsFinalizado = useCallback(() => {
+    getCantProjectsByStatus(company.id_empresa!, 'Finalizado')
+      .then((response) => {
+        setCantProyectsFinalizado(response);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [company.id_empresa]);
+
+  useEffect(getCantProjectsTrabajando, [getCantProjectsTrabajando]);
+  useEffect(getCantProjectsEspera, [getCantProjectsEspera]);
+  useEffect(getCantProjectsFinalizado, [getCantProjectsFinalizado]);
+
+  const getCantProjects = () => {
+    getCantProjectsTrabajando();
+    getCantProjectsEspera();
+    getCantProjectsFinalizado();
+  };
+
   const handleShowModal = (id_gerente: number) => {
     setSelectedProjectId(id_gerente);
     setShowModal(true);
@@ -47,6 +94,63 @@ export const ProyectsPage = () => {
   const goToEditProject = (id_proyecto:number) => {
     navigate('/create_project');
     onAddProject(id_proyecto);
+  };
+
+  const handleSearchProject = () => {
+    setIsLoading(true);
+    if (searchProject === '') {
+      allProyects();
+    } else {
+      planificaTechApi.get('/proyectos/searchProject', {
+        params: {
+          search: searchProject
+        }
+      })
+        .then((response) => {
+          setProyects(response.data);
+          setIsLoading(false);
+        })
+        .catch((error) => {
+          toast.error(error.response.data.message);
+          setIsLoading(false);
+        })
+    }
+  };
+
+  const changeStatusProject = (
+    id_proyecto:number, 
+    nombre_proyecto:string,
+    descripcion_proyecto:string,
+    fecha_inicio:string,
+    fecha_fin:string,
+    presupuesto_asignado:number,
+    tipo_proyecto:number,
+    id_gerente:number,
+    id_empresa:number,
+    estado_proyecto:string,
+  ) => {
+    updateProject(
+      id_proyecto,
+      nombre_proyecto,
+      descripcion_proyecto,
+      fecha_inicio,
+      fecha_fin,
+      presupuesto_asignado,
+      tipo_proyecto,
+      id_gerente,
+      id_empresa,
+      estado_proyecto,
+    )
+      .then(() => {
+        toast.success('Proyecto actualizado con exito');
+        getCantProjects();
+        allProyects();
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+        getCantProjects();
+        allProyects();
+      });
   };
 
   const renderProyectsByStatus = (status:string) => {
@@ -58,13 +162,21 @@ export const ProyectsPage = () => {
             <Card.Title>{proyect.nombre_proyecto}</Card.Title>
             <Card.Text>{proyect.descripcion_proyecto}</Card.Text>
             <Card.Text>Fecha Inicio: {formatterDate(proyect.fecha_inicio)}</Card.Text>
-            <Card.Text>Fecha Fin: {formatterDate(proyect.fecha_fin)}</Card.Text>
-            <Card.Text>Gerente Encargado: {proyect.nombre_gerente} {proyect.apellido_gerente}</Card.Text>
+            <Card.Text>
+              Fecha Fin: {
+                proyect.fecha_fin === null
+                  ? 'Sin Fecha'
+                  : formatterDate(proyect.fecha_fin)
+              }
+            </Card.Text>
+            <Card.Text>
+              Gerente Encargado: {proyect.nombre_gerente} {proyect.apellido_gerente}
+            </Card.Text>
             {
               proyect.tipo_proyecto === 1
                 ? (
                   <Card.Text>
-                    Asigando a Departamento(s)
+                    Asignado a Departamento(s)
                   </Card.Text>
                 )
                 : (
@@ -73,6 +185,29 @@ export const ProyectsPage = () => {
                   </Card.Text>
                 )
             }
+            <Card.Text>
+              <Form.Select
+                value={proyect.estado_proyecto}
+                onChange={
+                  (e: ChangeEvent<HTMLSelectElement>) => changeStatusProject(
+                    proyect.id_proyecto!,
+                    proyect.nombre_proyecto!,
+                    proyect.descripcion_proyecto!,
+                    proyect.fecha_inicio!,
+                    proyect.fecha_fin!,
+                    proyect.presupuesto_asignado!,
+                    proyect.tipo_proyecto!,
+                    proyect.id_gerente!,
+                    proyect.id_empresa!,
+                    e.target.value
+                  )
+                }
+              >
+                <option value="En Espera">En Espera</option>
+                <option value="Trabajando">Trabajando</option>
+                <option value="Finalizado">Finalizado</option>
+              </Form.Select>
+            </Card.Text>
           </Card.Body>
           <Card.Footer>
             <CustomButton
@@ -102,6 +237,11 @@ export const ProyectsPage = () => {
       ));
   };
 
+  const gotoCreateProject = () => {
+    onResetProject();
+    navigate('/create_project');
+  }
+
   return (
     <Layout>
       {isLoading ? (
@@ -124,7 +264,7 @@ export const ProyectsPage = () => {
                   marginBottom: "20px",
                   marginLeft: "20px",
                 }}
-                onClick={() => navigate('/create_project')}
+                onClick={gotoCreateProject}
               >
                 Crear Proyecto
               </Button>
@@ -135,10 +275,13 @@ export const ProyectsPage = () => {
                 <Form.Control
                   type="text"
                   placeholder="Buscar por ID o Titulo del Proyecto"
-                  // value={searchNota}
-                  // onChange={(e) => setSearchNota(e.target.value)}
+                  value={searchProject}
+                  onChange={(e) => setSearchProject(e.target.value)}
                 />
-                <Button variant="primary" /* onClick={handleSearchNote} */>
+                <Button 
+                  variant="primary" 
+                  onClick={handleSearchProject}
+                >
                   Buscar
                 </Button>
               </div>
@@ -147,20 +290,20 @@ export const ProyectsPage = () => {
 
           <Row>
             <Col md={4}>
-              <h3>En Espera</h3>
-              <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+              <h3>En Espera ({cantProyectsEspera})</h3>
+              <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                 {renderProyectsByStatus("En Espera")}
               </div>
             </Col>
             <Col md={4}>
-              <h3>Trabajando</h3>
-              <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+              <h3>Trabajando ({cantProyectsTrabajando})</h3>
+              <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                 {renderProyectsByStatus("Trabajando")}
               </div>
             </Col>
             <Col md={4}>
-              <h3>Finalizado</h3>
-              <div style={{ maxHeight: "100%", overflowY: "scroll" }}>
+              <h3>Finalizado ({cantProyectsFinalizado})</h3>
+              <div style={{ maxHeight: "70vh", overflowY: "auto" }}>
                 {renderProyectsByStatus("Finalizado")}
               </div>
             </Col>

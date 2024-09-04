@@ -4,8 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { Spinner } from "../components/Spinner";
 import { useNavigate } from "react-router-dom";
-import 'react-datepicker/dist/react-datepicker.css';
-import { useProjectStore } from "../store/projectStore";
+import { useProjectStore, useEmployeeOrDepartmentSuccessStore } from "../store/projectStore";
 import { ProyectsProps } from "../interfaces/proyectsInterface";
 import { AsignEmployeeProjectModal } from "../components/AsignEmployeeProjectModal";
 import { DeleteIcon } from "../helpers/iconButtons";
@@ -34,6 +33,7 @@ export const CreateProjectStepTwoPage = () => {
   const [gerentes, setGerentes] = useState<GerentesProps>();
 
   const { id_proyecto, onAddProject } = useProjectStore();
+  const { addingEmployeeDepartmentSuccess, resetAddingEmployeeDepartmentSuccess } = useEmployeeOrDepartmentSuccessStore();
   const { company } = useCompanyStore();
 
   useEffect(() => {
@@ -83,6 +83,12 @@ export const CreateProjectStepTwoPage = () => {
   }, [allEmployeeOrDepartment]);
 
   useEffect(() => {
+    if (addingEmployeeDepartmentSuccess) {
+      allEmployeeOrDepartment(1);
+    }
+  }, [addingEmployeeDepartmentSuccess, allEmployeeOrDepartment]);
+
+  useEffect(() => {
     planificaTechApi.get('/gerentes/getGerentesByCompany', {
       params: {
         id_empresa: company.id_empresa
@@ -111,11 +117,19 @@ export const CreateProjectStepTwoPage = () => {
   const handleCreateProject = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     onAddProject(id_proyecto);
-    navigate('/');
+    navigate('/create_project_step_three');
+    resetAddingEmployeeDepartmentSuccess();
   };
 
   const handleUpdateProject = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    navigate('/create_project_step_three');
+    resetAddingEmployeeDepartmentSuccess();
+  };
+
+  const goBack = () => {
+    window.history.back()
+    resetAddingEmployeeDepartmentSuccess();
   };
 
   return (
@@ -139,7 +153,7 @@ export const CreateProjectStepTwoPage = () => {
                     <h1 className="mt-3 mb-4">
                       {
                         id_proyecto
-                          ? `Editar Proyecto - Paso 2 - Asignación: ${oneProjectData.id_proyecto} ${oneProjectData.nombre_proyecto}`
+                          ? `Editar Proyecto - Paso 2 - Asignación: ${oneProjectData.id_proyecto} - ${oneProjectData.nombre_proyecto}`
                           : 'Crear Proyecto - Paso 2 - Asignación'
                       }
                     </h1>
@@ -302,7 +316,7 @@ export const CreateProjectStepTwoPage = () => {
                   <Col md={4}>
                     <Button
                       variant="danger"
-                      onClick={() => window.history.back()}
+                      onClick={goBack}
                     >
                       Atrás
                     </Button>
@@ -311,6 +325,15 @@ export const CreateProjectStepTwoPage = () => {
                   <Col md={4}/>
 
                   <Col md={4}>
+                    <Button 
+                      type="submit"
+                      variant="secondary"
+                      hidden={!id_proyecto}
+                      style={{marginRight: '5px'}}
+                      onClick={() => navigate('/create_project_step_three')}
+                    >
+                      Omitir
+                    </Button>
                     <Button 
                       type="submit"
                       variant="primary"
