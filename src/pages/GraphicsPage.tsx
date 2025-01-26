@@ -3,20 +3,21 @@ import { Container, Row, Col, Form } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
 import { CustomDownloadButton } from "../components/CustomDownloadButton";
 import { CustomAsterisk } from '../components/CustomAsterisk';
-import { BarChart } from "../components/BarChart";
-import { PieChart } from "../components/PieChart";
+import { BarChart } from "../components/charts/BarChart";
+import { PieChart } from "../components/charts/PieChart";
 import { saveAs } from 'file-saver';
 import './styles/graphicsPage.css';
 import { cantEmpleadosDepartamentos } from "../api/graficas/departamentos/cantEmpleadosDepartamentos";
 import { cantEmpleadosPuestos} from "../api/graficas/empleados/cantEmpleadosPuestos";
-import { getUniqueRandomColor, usedColors } from '../helpers/dataGraphs';
+import { getUniqueRandomColor } from '../utils/dataGraphs';
+import { PolarAreaChart } from "../components/charts/PolarAreaChart";
 
 interface ChartDataProps {
   labels: string[];
   datasets: {
     label: string;
     data: number[];
-    backgroundColor: string[];
+    backgroundColor: string;
   }[];
 }
 
@@ -30,7 +31,7 @@ export const GraphicsPage = () => {
       {
         label: "",
         data: [],
-        backgroundColor: [],
+        backgroundColor: "",
       }
     ],
   });
@@ -41,6 +42,8 @@ export const GraphicsPage = () => {
       return <BarChart id="grafico" title="Gráfico de Barras" chartData={chartData} />;
     case 'Gráfico circular':
       return <PieChart title="Gráfico Circular" chartData={chartData} />;
+    case 'Gráfico polar':
+      return <PolarAreaChart title="Gráfico Polar" chartData={chartData} />;
     default:
       return null;
     }
@@ -58,13 +61,14 @@ export const GraphicsPage = () => {
     switch (e.target.value) {
     case "Cant de Empleados por Departamento":
       cantEmpleadosDepartamentos().then((data) => {
+        const usedColors = new Set<string>();
         const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
         setChartData({
-          labels: data?.labels || [],
+          labels: data?.labels,
           datasets: [
             {
               label: "Cant. empleados",
-              data: data?.datasets[0]?.data || [],
+              data: data?.datasets[0].data,
               backgroundColor: colors,
             }
           ]
@@ -73,13 +77,14 @@ export const GraphicsPage = () => {
       break;
     case "Cant de Empleados por Puesto":
       cantEmpleadosPuestos().then((data) => {
+        const usedColors = new Set<string>();
         const colors = data?.datasets[0]?.data.map(() => getUniqueRandomColor(usedColors)) || [];
         setChartData({
-          labels: data?.labels || [],
+          labels: data?.labels,
           datasets: [
             {
               label: "Cant. empleados",
-              data: data?.datasets[0]?.data || [],
+              data: data?.datasets[0].data,
               backgroundColor: colors,
             }
           ]
@@ -115,6 +120,7 @@ export const GraphicsPage = () => {
                   <option>Selecciona una opción</option>
                   <option>Gráfico de barras</option>
                   <option>Gráfico circular</option>
+                  <option>Gráfico polar</option>
                 </Form.Select>
               </Form.Group>
             </Form>
@@ -128,9 +134,9 @@ export const GraphicsPage = () => {
                   tipoGraficoSeleccionado !== "" && tipoGraficoSeleccionado !== "Selecciona una opción" && (
                     <Form.Select onChange={handleModuloGraficoChange}>
                       <option>Selecciona una opción</option>
-                      <option>Departamentos</option>
-                      <option>Empleados</option>
-                      <option>Proyectos</option>
+                      <option value="departamentos">Departamentos</option>
+                      <option value="empleados">Empleados</option>
+                      <option value="proyectos">Proyectos</option>
                     </Form.Select>
                   )
                 }
@@ -143,7 +149,7 @@ export const GraphicsPage = () => {
               <Form.Group className="mb-3">
                 <Form.Label><CustomAsterisk /> Selecciona los datos</Form.Label>
                 {
-                  moduloGraficoSeleccionado !== "" && moduloGraficoSeleccionado !== "Selecciona una opción" && (
+                  moduloGraficoSeleccionado !== "" && moduloGraficoSeleccionado === "empleados" && (
                     <Form.Select onChange={handleDatosChange}>
                       <option>Selecciona una opción</option>
                       <option value="Cant de Empleados por Departamento">Cant de Empleados por Departamento</option>

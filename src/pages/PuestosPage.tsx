@@ -6,9 +6,9 @@ import { toast, ToastContainer } from 'react-toastify';
 import { CustomButton } from "../components/CustomButton";
 import { CustomAsterisk } from "../components/CustomAsterisk";
 import { Spinner } from "../components/Spinner";
-import { ActivateIcon, EditIcon, InactiveIcon } from "../helpers/iconButtons";
+import { ActivateIcon, EditIcon, InactiveIcon } from "../utils/iconButtons";
 import { UserProps } from "../interfaces/userInterface";
-import { getIdUser } from "../helpers/getLocalStorageData";
+import { getIdUser } from "../utils/getLocalStorageData";
 import { PuestoProps } from "../interfaces/puestosInterface";
 
 export const PuestosPage = () => {

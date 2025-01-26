@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { Container, Row, Col, Button, Table } from "react-bootstrap";
 import Chart, { CategoryScale } from "chart.js/auto";
-import { BarChart } from "../components/BarChart";
+import { BarChart } from "../components/charts/BarChart";
 import { Layout } from "../layout/Layout";
 import { planificaTechApi } from "../api/baseApi";
 import { EmployeesProps } from "../interfaces/employeeInterface";
 import { useCompanyStore } from "../store/companyStore";
 import { cantProyectosEstado } from "../api/graficas/proyectos/cantProyectosEstado";
-import { getUniqueRandomColor } from "../helpers/dataGraphs";
+import { getUniqueRandomColor } from "../utils/dataGraphs";
 import { GraphicsProps } from "../interfaces/graphicsInterface";
 import { cantEmpleadosDepartamentos } from "../api/graficas/departamentos/cantEmpleadosDepartamentos";
 import { TableProjectsByStatus } from "../components/TableProjectsByStatus";

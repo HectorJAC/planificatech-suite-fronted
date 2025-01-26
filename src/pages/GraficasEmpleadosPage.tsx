@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { Container, Row, Col, Accordion } from "react-bootstrap";
 import Chart from "chart.js/auto";
 import { CategoryScale } from "chart.js/auto";
-import { BarChart } from "../components/BarChart";
+import { BarChart } from "../components/charts/BarChart";
 import { Layout } from "../layout/Layout";
 import { useCompanyStore } from "../store/companyStore";
 import { cantEmpleadosPuestos } from '../api/graficas/empleados/cantEmpleadosPuestos';
 import { cantEmpleadosSexo } from "../api/graficas/empleados/cantEmpleadosSexo";
 import { cantEmpleadosFechaIngreso } from "../api/graficas/empleados/cantEmpleadosFechaIngreso";
-import { getUniqueRandomColor } from "../helpers/dataGraphs";
+import { getUniqueRandomColor } from "../utils/dataGraphs";
 import { cantEmpleadosDepartamentos } from '../api/graficas/departamentos/cantEmpleadosDepartamentos';
 import { cantEmpleadosSalario } from '../api/graficas/empleados/cantEmpleadosSalario';
 import { GraphicsProps } from "../interfaces/graphicsInterface";
@@ -174,7 +174,7 @@ export const GraficasEmpleadosPage = () => {
                       datasets: chartData.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
-                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                        backgroundColor: dataset.backgroundColor as unknown as string,
                       })),
                     }} 
                   />
@@ -197,7 +197,7 @@ export const GraficasEmpleadosPage = () => {
                       datasets: chartDataPuestos.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
-                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                        backgroundColor: dataset.backgroundColor as unknown as string,
                       })),
                     }} 
                   />
@@ -220,7 +220,7 @@ export const GraficasEmpleadosPage = () => {
                       datasets: chartDataSexo.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
-                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                        backgroundColor: dataset.backgroundColor as unknown as string,
                       })),
                     }} 
                   />
@@ -243,7 +243,7 @@ export const GraficasEmpleadosPage = () => {
                       datasets: chartDataFechaIngreso.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
-                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                        backgroundColor: dataset.backgroundColor as unknown as string,
                       })),
                     }} 
                   />
@@ -266,7 +266,7 @@ export const GraficasEmpleadosPage = () => {
                       datasets: chartDataSalario.datasets.map(dataset => ({
                         label: dataset.label,
                         data: dataset.data,
-                        backgroundColor: dataset.backgroundColor as unknown as string[],
+                        backgroundColor: dataset.backgroundColor as unknown as string,
                       })),
                     }} 
                   />

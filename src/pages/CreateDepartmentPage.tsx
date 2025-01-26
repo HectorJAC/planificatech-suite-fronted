@@ -8,7 +8,7 @@ import { CustomAsterisk } from "../components/CustomAsterisk";
 import { GerentesProps } from "../interfaces/gerenteInterface";
 import { Spinner } from "../components/Spinner";
 import { CustomButton } from "../components/CustomButton";
-import { ActivateIcon, EditIcon, InactiveIcon } from "../helpers/iconButtons";
+import { ActivateIcon, EditIcon, InactiveIcon } from "../utils/iconButtons";
 import { useCompanyStore } from "../store/companyStore";
 import { planificaTechApi } from "../api/baseApi";
 

@@ -5,11 +5,11 @@ import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import { CustomPasswordInput } from "../components/CustomPasswordInput";
-import { getIdDirectorGeneral, getIdUser } from "../helpers/getLocalStorageData";
+import { getIdDirectorGeneral, getIdUser } from "../utils/getLocalStorageData";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import { getDirectorGeneralById } from "../api/director_general/getDIrectorGeneralById";
 import { getUserById } from "../api/usuarios/getUserById";
-import { handleDataNull } from "../helpers/handleDataNull";
+import { handleDataNull } from "../utils/handleDataNull";
 import DatePicker from "react-datepicker";
 import { planificaTechApi } from "../api/baseApi";
 

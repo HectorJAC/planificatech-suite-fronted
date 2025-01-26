@@ -14,7 +14,7 @@ import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 import { planificaTechApi } from '../api/baseApi';
-import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
+import { getIdDirectorGeneral } from '../utils/getLocalStorageData';
 import { useCompanyStore } from '../store/companyStore';
 
 export const Login = () => {

@@ -1,13 +1,13 @@
-import { Container, Row, Col, Form, Image } from "react-bootstrap";
+import { Container, Row, Col, Form } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
-import { getImageUrl } from "../helpers/getImageUrl";
 import DatePicker from "react-datepicker";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { useCompanyStore } from "../store/companyStore";
+import { CustomImage } from "../components/CustomImage";
 
 export const ConsultCompanyPage = () => {
 
-  const { onGetCompany, company } = useCompanyStore();
+  const { company } = useCompanyStore();
 
   return (
     <Layout>
@@ -22,11 +22,11 @@ export const ConsultCompanyPage = () => {
 
         <Row>
           <Col md={6}>
-            <Image 
-              src={getImageUrl(onGetCompany().logo_empresa!)} 
-              alt="Logo de la empresa" 
-              fluid
+            <CustomImage 
+              imageData={company.logo_empresa}
+              alt="Logo de la empresa"
               style={{ width: "100%", height: "auto" }}
+              className="mb-2"
             />
           </Col>
 

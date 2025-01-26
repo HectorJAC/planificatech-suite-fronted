@@ -6,7 +6,7 @@ import { CustomButton } from "../components/CustomButton";
 import axios from "axios";
 import { Spinner } from "../components/Spinner";
 import { GerentesProps } from "../interfaces/gerenteInterface";
-import { ViewIcon } from "../helpers/iconButtons";
+import { ViewIcon } from "../utils/iconButtons";
 import { DepartmentsProps } from "../interfaces/departmentInterface";
 import { GerentesModal } from "../components/GerentesModal";
 import { useCompanyStore } from "../store/companyStore";

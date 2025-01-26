@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Footer } from "../components/Footer";
 import { Header } from "../components/Header";
 import { Sidebar } from "../components/Sidebar";
-import { getIdDirectorGeneral, getIdUser } from "../helpers/getLocalStorageData";
+import { getIdDirectorGeneral, getIdUser } from "../utils/getLocalStorageData";
 import { planificaTechApi } from "../api/baseApi";
 import { useCompanyStore } from "../store/companyStore";
 

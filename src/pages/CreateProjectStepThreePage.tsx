@@ -9,10 +9,10 @@ import { ProyectsProps } from "../interfaces/proyectsInterface";
 import { getOneProjectData } from "../api/proyectos/getOneProjectData";
 import { getOneProjectDepartment } from "../api/proyectos/getOneProjectDepartment";
 import { getOneProjectEmployee } from "../api/proyectos/getOneProjectEmployee";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { AsignTaskProjectModal } from "../components/AddTaskToProjectModal";
 import { CustomButton } from "../components/CustomButton";
-import { DeleteIcon, EditIcon } from "../helpers/iconButtons";
+import { DeleteIcon, EditIcon } from "../utils/iconButtons";
 import { updateTaskFromProject } from "../api/proyectos/updateTaskFromProject";
 import { deleteTaskFromProject } from "../api/proyectos/deleteTaskFromProject";
 

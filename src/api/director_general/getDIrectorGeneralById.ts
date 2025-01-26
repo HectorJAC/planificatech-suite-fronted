@@ -1,5 +1,5 @@
 import { planificaTechApi } from "../baseApi";
-import { getIdDirectorGeneral } from "../../helpers/getLocalStorageData";
+import { getIdDirectorGeneral } from "../../utils/getLocalStorageData";
 
 export const getDirectorGeneralById = async () => {
   const response = await planificaTechApi.get('director_general/getDirectorGeneral', {

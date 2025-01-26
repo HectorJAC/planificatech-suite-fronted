@@ -1,10 +1,10 @@
 import { Button, Col, Container, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import { CustomButton } from "../components/CustomButton";
-import { EditIcon } from "../helpers/iconButtons";
-import { formatterDate } from "../helpers/formatters";
+import { EditIcon } from "../utils/iconButtons";
+import { formatterDate } from "../utils/formatters";
 import { getEmployees } from "../api/empleados/getAllEmployee";
 import { EmployeesProps } from "../interfaces/employeeInterface";
-import { handleDataNull } from "../helpers/handleDataNull";
+import { handleDataNull } from "../utils/handleDataNull";
 import { FC, useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useProjectStore, useEmployeeOrDepartmentSuccessStore } from "../store/projectStore";

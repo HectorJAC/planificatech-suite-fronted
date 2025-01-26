@@ -14,7 +14,7 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
-import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
+import { getIdDirectorGeneral } from '../utils/getLocalStorageData';
 import DatePicker from 'react-datepicker';
 import { useCompanyStore } from '../store/companyStore';
 import { planificaTechApi } from '../api/baseApi';

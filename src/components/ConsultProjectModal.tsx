@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { Button, Card, Col, Modal, Row } from "react-bootstrap";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { ProyectsProps } from "../interfaces/proyectsInterface";
 import { getOneProjectDepartment } from "../api/proyectos/getOneProjectDepartment";
 import { getOneProjectData } from "../api/proyectos/getOneProjectData";

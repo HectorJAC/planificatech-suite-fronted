@@ -1,6 +1,6 @@
 import { Button, Col, Container, Form, Modal, Row, Spinner, Table } from "react-bootstrap";
 import { CustomButton } from "../components/CustomButton";
-import { EditIcon } from "../helpers/iconButtons";
+import { EditIcon } from "../utils/iconButtons";
 import { FC, useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { useProjectStore, useEmployeeOrDepartmentSuccessStore } from "../store/projectStore";

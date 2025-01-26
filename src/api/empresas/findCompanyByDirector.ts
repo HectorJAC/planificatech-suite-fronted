@@ -1,5 +1,5 @@
 import { planificaTechApi } from "../baseApi";
-import { getIdDirectorGeneral } from "../../helpers/getLocalStorageData";
+import { getIdDirectorGeneral } from "../../utils/getLocalStorageData";
 
 export const findCompanyByDirector = async () => {
   const response = await planificaTechApi.get('empresas/findCompanyByDirector', {

@@ -6,14 +6,14 @@ import { CustomButton } from "../components/CustomButton";
 import { NotesModal } from "../components/NotesModal";
 import { getNotesByUser } from "../api/notas/getNotesByUser";
 import { NoteProps } from "../interfaces/notesInterface";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import axios from "axios";
 import { Spinner } from "../components/Spinner";
-import { DeleteIcon, EditIcon } from "../helpers/iconButtons";
+import { DeleteIcon, EditIcon } from "../utils/iconButtons";
 import { useNotesStore } from "../store/notesStore";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import { planificaTechApi } from "../api/baseApi";
-import { getIdUser } from "../helpers/getLocalStorageData";
+import { getIdUser } from "../utils/getLocalStorageData";
 
 export const MyNotesPage = () => {
 

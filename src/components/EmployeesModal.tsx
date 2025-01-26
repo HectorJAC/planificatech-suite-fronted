@@ -1,7 +1,7 @@
 import { FC, useEffect, useState } from "react";
 import { Button, Col, Modal, Row } from "react-bootstrap";
 import axios from "axios";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { EmployeeProps } from "../interfaces/employeeInterface";
 
 interface EmployeeModalProps {
