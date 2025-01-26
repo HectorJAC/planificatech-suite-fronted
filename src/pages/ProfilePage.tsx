@@ -1,16 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { Container, Row, Col, Form, Button, Modal } from "react-bootstrap";
 import { toast, ToastContainer } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import { CustomPasswordInput } from "../components/CustomPasswordInput";
-import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { getIdDirectorGeneral, getIdUser } from "../utils/getLocalStorageData";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import { getDirectorGeneralById } from "../api/director_general/getDIrectorGeneralById";
 import { getUserById } from "../api/usuarios/getUserById";
-import { handleDataNull } from "../helpers/handleDataNull";
+import { handleDataNull } from "../utils/handleDataNull";
 import DatePicker from "react-datepicker";
+import { planificaTechApi } from "../api/baseApi";
 
 interface UserDataProps {
   nombres: string;
@@ -51,6 +52,9 @@ export const ProfilePage = () => {
       .catch((error) => {
         console.log(error);
       });
+  }, []);
+
+  const getUserData = useCallback(() => {
     getUserById()
       .then((response) => {
         setNamePassword(response);
@@ -59,6 +63,8 @@ export const ProfilePage = () => {
         console.log(error);
       });
   }, []);
+
+  useEffect(getUserData, [getUserData]);
 
   const handleChangePassword = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -70,11 +76,17 @@ export const ProfilePage = () => {
     } else if (passwordData.newPassword !== passwordData.newPassword) {
       toast.error('Las contraseñas no coinciden');
     } else {
-      toast.success('Cambio de contraseña guardado exitosamente');
-      // Colocar la nueva contraseña en el objeto userData
-      setUserData(prevState => ({ ...prevState, password: passwordData.newPassword }));
-      // Cerrar el modal y limpiar los campos
-      handleCloseModal();
+      planificaTechApi.put('/forget_password', {
+        username: namePassword.username,
+        password: passwordData.newPassword
+      })
+        .then(response => {
+          toast.success(`${response.data.message}`);
+          handleCloseModal();
+        })
+        .catch(error => {
+          toast.error(`${error.response.data.message}`);
+        });
     }
   }; 
 
@@ -93,8 +105,7 @@ export const ProfilePage = () => {
     } else {
       axios.put(`${import.meta.env.VITE_API_URL}/director_general/updateDirectorGeneral`, {
         id_director_general: getIdDirectorGeneral(),
-        username: namePassword.username,
-        password: namePassword.password,
+        id_usuario: getIdUser(),
         nombres: userData.nombres,
         apellidos: userData.apellidos,
         cedula: userData.cedula,
@@ -109,6 +120,7 @@ export const ProfilePage = () => {
         .then((response) => {
           toast.success(`${response.data.message}`);
           setEditMode(false);
+          setShowConfirmModal(false);
         })
         .catch((error) => {
           console.log(error);
@@ -144,6 +156,7 @@ export const ProfilePage = () => {
       newPassword: '',
       repeatPassword: ''
     });
+    getUserData();
   };
 
   const handleShowConfirmModal = () => {
@@ -175,8 +188,7 @@ export const ProfilePage = () => {
 
   return (
     <Layout>
-      <Container>
-                
+      <Container>  
         <h1 className="fw-bold text-black my-3">Perfil</h1>
         <Row>
           <Col md={6}>

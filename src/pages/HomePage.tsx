@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { Container, Image } from "react-bootstrap";
+import { Col, Container, Row } from "react-bootstrap";
 import { Layout } from "../layout/Layout";
-import { getImageUrl } from "../helpers/getImageUrl";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import { useNavigate } from "react-router-dom";
 import { useCompanyStore } from "../store/companyStore";
+import { CustomImage } from "../components/CustomImage";
+import { planificaTechApi } from "../api/baseApi";
 
 export const HomePage = () => {
 
@@ -17,7 +17,7 @@ export const HomePage = () => {
     if (company.id_empresa === undefined) {
       return;
     } else {
-      axios.get(`${import.meta.env.VITE_API_URL}/departamentos/getDepartamentos`, {
+      planificaTechApi.get('/departamentos/getDepartamentos', {
         params: {
           id_empresa: company.id_empresa
         }
@@ -35,17 +35,21 @@ export const HomePage = () => {
     <Layout>
       <Container className="mt-3 d-flex justify-content-center align-items-center">
         {company.logo_empresa && (
-          <Image 
-            src={getImageUrl(company.logo_empresa)} 
-            alt="Logo de la empresa" 
-            fluid
-          />
+          <Row>
+            <Col md={24}>
+              <CustomImage 
+                imageData={company?.logo_empresa}
+                alt="Logo de la empresa"
+                style={{ width: "100%", height: "auto" }}
+              />
+            </Col>
+          </Row>
         )}
       </Container>
 
       <CustomBasicModal 
         title="Su empresa no tiene departamentos"
-        body="¿Desea crear un departamento ahora o hacerlo mas tarde?"
+        body="¿Desea crear un departamento ahora?"
         secondaryButton="Crear departamento mas tarde"
         primaryButton="Crear departamento ahora"
         showModal={showModal}

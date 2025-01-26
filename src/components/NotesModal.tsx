@@ -2,9 +2,9 @@ import axios from "axios";
 import { FC, useEffect, useState } from "react";
 import { Button, Form, Modal } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { getIdUser } from "../helpers/getLocalStorageData";
+import { getIdUser } from "../utils/getLocalStorageData";
 import { CustomAsterisk } from "./CustomAsterisk";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { useNotesStore } from "../store/notesStore";
 import { OneNoteProps } from "../interfaces/notesInterface";
 import { planificaTechApi } from "../api/baseApi";
@@ -22,18 +22,20 @@ export const NotesModal:FC<NotesModalProps> = ({showModal, setShowModal, onHide}
   const [noteData, setNoteData] = useState<OneNoteProps>({} as OneNoteProps);
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_API_URL}/notas/getNote`, {
-      params: {
-        id_nota: id_nota
-      }
-    })
-      .then((response) => {
-        setNoteData(response.data);
+    if (showModal) {
+      planificaTechApi.get('/notas/getNote', {
+        params: {
+          id_nota: id_nota
+        }
       })
-      .catch((error) => {
-        toast.error(error);
-      });
-  }, [id_nota])
+        .then((response) => {
+          setNoteData(response.data);
+        })
+        .catch((error) => {
+          toast.error(error);
+        });
+    }
+  }, [id_nota, showModal]);
 
   // Función para obtener la fecha de creación de la nota
   const fechaCreacionNota = new Date().toLocaleDateString();

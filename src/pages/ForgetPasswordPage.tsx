@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import { 
@@ -14,6 +13,7 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
+import { planificaTechApi } from '../api/baseApi';
 
 export const ForgetPasswordPage = () => {
     
@@ -31,14 +31,14 @@ export const ForgetPasswordPage = () => {
     } else if (newPassword !== repeatPassword) {
       toast.error('Las contraseñas no coinciden');
     } else {
-      axios.put(`${import.meta.env.VITE_API_URL}/forget_password`, {
+      planificaTechApi.put('forget_password', {
         username: username,
         password: newPassword
       })
         .then(response => {
           toast.success(`${response.data.message}`);
           setTimeout(() => {
-            navigate('/');
+            navigate('/login');
           }, 2000);
         })
         .catch(error => {
@@ -102,7 +102,7 @@ export const ForgetPasswordPage = () => {
                   </Form.Group>
 
                   <Button size='lg' className="mb-2 w-100" type='submit'>
-                                        Cambiar Contraseña
+                    Cambiar Contraseña
                   </Button>
                 </Card.Body>
               </Card>

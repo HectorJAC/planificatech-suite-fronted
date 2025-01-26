@@ -1,5 +1,5 @@
 import { planificaTechApi } from "../baseApi";
-import { getIdUser } from "../../helpers/getLocalStorageData";
+import { getIdUser } from "../../utils/getLocalStorageData";
 
 export const getNotesByUser = async (page:number, limit:number) => {
   const response = await planificaTechApi.get('notas/getNotesByUser', {

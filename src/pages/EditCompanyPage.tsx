@@ -1,20 +1,23 @@
 import { useState, ChangeEvent, useEffect, useCallback } from "react";
-import axios from "axios";
-import { Container, Row, Col, Form, Button, Image } from "react-bootstrap";
+import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import { ToastContainer, toast } from 'react-toastify';
 import { Layout } from "../layout/Layout";
 import { CustomAsterisk } from '../components/CustomAsterisk';
-import { getImageUrl } from "../helpers/getImageUrl";
 import { CompanyProps } from "../interfaces/companyInteface";
-import { getIdDirectorGeneral } from "../helpers/getLocalStorageData";
+import { getIdDirectorGeneral } from "../utils/getLocalStorageData";
 import { findCompanyByDirector } from "../api/empresas/findCompanyByDirector";
 import { CustomBasicModal } from "../components/CustomBasicModal";
 import DatePicker from "react-datepicker";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
+import { useCompanyStore } from "../store/companyStore";
+import { planificaTechApi } from "../api/baseApi";
+import { CustomImage } from "../components/CustomImage";
 
 export const EditCompanyPage = () => {
   const [companyData, setCompanyData] = useState<CompanyProps>({} as CompanyProps);
   const [showModal, setShowModal] = useState(false);
+
+  const { onSetCompany } = useCompanyStore();
 
   const getCompanyData = useCallback(() => {
     findCompanyByDirector()
@@ -39,17 +42,23 @@ export const EditCompanyPage = () => {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // Obtenemos la ruta relativa del archivo
-      const relativePath = file.name;
-      setCompanyData(prevState => ({ ...prevState, logo_empresa: relativePath }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result?.toString().split(",")[1];
+        if (base64String) {
+          setCompanyData(prevState => ({ ...prevState, logo_empresa: base64String }));
+        }
+      };
+      reader.readAsDataURL(file);
     }
   };
+  
 
   const handleFormSubmit = async () => {
     if (companyData.nombre_empresa === '' || companyData.rnc_empresa === '' || companyData.direccion_empresa === '' || companyData.numero_telefonico === '') {
       toast.error('Llenar los campos requeridos');
     } else {
-      axios.put(`${import.meta.env.VITE_API_URL}/empresas/updateCompany`, {
+      planificaTechApi.put('/empresas/updateCompany', {
         id_empresa: companyData.id_empresa,
         nombre_empresa: companyData.nombre_empresa,
         rnc_empresa: companyData.rnc_empresa,
@@ -62,6 +71,7 @@ export const EditCompanyPage = () => {
       })
         .then((response) => {
           toast.success(`${response.data.message}`);
+          onSetCompany(companyData);
         })
         .catch((error) => {
           console.log(error);
@@ -130,10 +140,10 @@ export const EditCompanyPage = () => {
                 {
                   companyData?.logo_empresa ? (
                     <div>
-                      <Image 
-                        src={getImageUrl(companyData.logo_empresa)} 
-                        alt="Logo de la empresa" 
-                        fluid
+                      <CustomImage 
+                        imageData={companyData?.logo_empresa}
+                        alt="Logo de la empresa"
+                        style={{ width: "200px", height: "auto" }}
                         className="mb-2"
                       />
                       <Form.Control

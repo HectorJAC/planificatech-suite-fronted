@@ -16,7 +16,7 @@ export const Footer = () => {
           <Col>
             <p className="text-muted text-center">
               {"Copyright © "}
-                Hector Aramboles{" "} 
+                Hector Arámboles{" "} 
               {new Date().getFullYear()}
               {"."}
             </p>

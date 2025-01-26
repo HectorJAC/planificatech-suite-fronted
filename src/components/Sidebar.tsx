@@ -33,29 +33,23 @@ export const Sidebar:FC = () => {
 
   return (
     <Accordion className="sidebar" activeKey={state.openSection} onSelect={(eventKey) => handleSectionClick(eventKey as string)}>
-      <Accordion.Item eventKey="0">
-        <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
-        <CustomSideBarItem 
-          linkText="Dashboard"
-          linkPath="/dashboard"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Dashboard')}
-        />
-      </Accordion.Item>
-
-      <Accordion.Item eventKey="1">
-        <Accordion.Header className="sidebar-header">Correo</Accordion.Header>
-        <CustomSideBarItem 
-          linkText="Pagina Correo"
-          linkPath="/"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Pagina Correo')}
-        />
-      </Accordion.Item>
+      {
+        user.tipo_usuario === '1' && (
+          <Accordion.Item eventKey="0">
+            <Accordion.Header className="sidebar-header">Dashboard</Accordion.Header>
+            <CustomSideBarItem 
+              linkText="Dashboard"
+              linkPath="/dashboard"
+              activeOption={state.activeOption}
+              handleActiveOption={() => handleActiveOption('Dashboard')}
+            />
+          </Accordion.Item>
+        )
+      }
 
       {
         user.tipo_usuario === '1' && (
-          <Accordion.Item eventKey="2">
+          <Accordion.Item eventKey="1">
             <Accordion.Header className="sidebar-header">Empresas</Accordion.Header>
             <CustomSideBarItem 
               linkText="Editar Empresa"
@@ -73,7 +67,7 @@ export const Sidebar:FC = () => {
         )
       }
 
-      <Accordion.Item eventKey="3">
+      <Accordion.Item eventKey="2">
         <Accordion.Header className="sidebar-header">Reuniones</Accordion.Header>
         <CustomSideBarItem 
           linkText="Programar Reunion"
@@ -89,7 +83,7 @@ export const Sidebar:FC = () => {
         />
       </Accordion.Item>
 
-      <Accordion.Item eventKey="4">
+      <Accordion.Item eventKey="3">
         <Accordion.Header className="sidebar-header">Departamentos</Accordion.Header>
         {
           user.tipo_usuario === '1' && (
@@ -112,16 +106,16 @@ export const Sidebar:FC = () => {
           )
         }
         <CustomSideBarItem 
-          linkText="Consultas Departamento"
+          linkText="Gráficas Departamentos"
           linkPath="/"
           activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Consultas Departamento')}
+          handleActiveOption={() => handleActiveOption('Gráficas Departamentos')}
         />
       </Accordion.Item>
 
       {
         user.tipo_usuario === '1' && (
-          <Accordion.Item eventKey="5">
+          <Accordion.Item eventKey="4">
             <Accordion.Header className="sidebar-header">Gerentes</Accordion.Header>
             <CustomSideBarItem 
               linkText="Consultas Gerentes"
@@ -139,7 +133,7 @@ export const Sidebar:FC = () => {
         )
       }
 
-      <Accordion.Item eventKey="6">
+      <Accordion.Item eventKey="5">
         <Accordion.Header className="sidebar-header">Empleados</Accordion.Header>
         <CustomSideBarItem 
           linkText="Crear Empleados"
@@ -155,51 +149,23 @@ export const Sidebar:FC = () => {
         />
       </Accordion.Item>
 
-      <Accordion.Item eventKey="7">
+      <Accordion.Item eventKey="6">
         <Accordion.Header className="sidebar-header">Proyectos</Accordion.Header>
         <CustomSideBarItem 
           linkText="Crear Proyectos"
-          linkPath="/"
+          linkPath="/proyects"
           activeOption={state.activeOption}
           handleActiveOption={() => handleActiveOption('Crear Proyectos')}
         />
         <CustomSideBarItem 
-          linkText="Consultas Proyectos"
-          linkPath="/"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Consultas Proyectos')}
-        />
-        <CustomSideBarItem 
           linkText="Gráficas Proyectos"
-          linkPath="/"
+          linkPath="/graphics_projects"
           activeOption={state.activeOption}
           handleActiveOption={() => handleActiveOption('Gráficas Proyectos')}
         />
       </Accordion.Item>
 
-      <Accordion.Item eventKey="8">
-        <Accordion.Header className="sidebar-header">Planes</Accordion.Header>
-        <CustomSideBarItem 
-          linkText="Crear Planes"
-          linkPath="/"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Crear Planes')}
-        />
-        <CustomSideBarItem 
-          linkText="Consultas Planes"
-          linkPath="/"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Consultas Planes')}
-        />
-        <CustomSideBarItem 
-          linkText="Gráficas Planes"
-          linkPath="/"
-          activeOption={state.activeOption}
-          handleActiveOption={() => handleActiveOption('Gráficas Planes')}
-        />
-      </Accordion.Item>
-
-      <Accordion.Item eventKey="9">
+      <Accordion.Item eventKey="7">
         <Accordion.Header className="sidebar-header">Gráficas</Accordion.Header>
         <CustomSideBarItem 
           linkText="Generar Gráficas"
@@ -209,7 +175,7 @@ export const Sidebar:FC = () => {
         />
       </Accordion.Item>
 
-      <Accordion.Item eventKey="10">
+      <Accordion.Item eventKey="8">
         <Accordion.Header className="sidebar-header">Utilidades</Accordion.Header>
         <CustomSideBarItem 
           linkText="Crear Reporte"

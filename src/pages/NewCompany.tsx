@@ -14,11 +14,13 @@ import { FaAngleLeft } from "react-icons/fa6";
 import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
-import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
-import { getDirectorGeneralById } from '../api/director_general/getDIrectorGeneralById';
+import { getIdDirectorGeneral } from '../utils/getLocalStorageData';
+import DatePicker from 'react-datepicker';
+import { useCompanyStore } from '../store/companyStore';
+import { planificaTechApi } from '../api/baseApi';
 
 export const NewCompany = () => {
-
+  const navigate = useNavigate();
   const [nombreEmpresa, setNombreEmpresa] = useState<string>('');
   const [rncEmpresa, setRncEmpresa] = useState<number>();
   const [logoEmpresa, setLogoEmpresa] = useState<string>('');
@@ -28,8 +30,14 @@ export const NewCompany = () => {
   const [correoEmpresa, setCorreoEmpresa] = useState<string>('');
   const [nombreApellidoDirector, setNombreApellidoDirector] = useState<string>('');
 
+  const { onSetCompany } = useCompanyStore();
+
   useEffect(() => {
-    getDirectorGeneralById()
+    planificaTechApi.get('director_general/getDirectorGeneral', {
+      params: {
+        id_director_general: getIdDirectorGeneral()
+      }
+    })
       .then((response) => {
         setNombreApellidoDirector(response.data.nombres + ' ' + response.data.apellidos);
       })
@@ -38,7 +46,13 @@ export const NewCompany = () => {
       });
   }, []);
 
-  const navigate = useNavigate();
+  const handleDateCreateChange = (date:any) => {
+    if (date !== null) {
+      setFechaFundacion(date);
+    } else {
+      toast.info('Ingrese una fecha')
+    }
+  };
 
   const handleCreateCompany = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -65,6 +79,7 @@ export const NewCompany = () => {
           setTimeout(() => {
             navigate('/');
           }, 2000);
+          onSetCompany({ ...response.data.empresa });
         })
         .catch((error) => {
           toast.error(`${error.response.data.message}`);
@@ -131,12 +146,28 @@ export const NewCompany = () => {
                     />
                   </Form.Group>
 
-                  <Form.Group className='mb-4 w-100'>
+                  <Form.Group className="mb-4">
                     <Form.Label>Fecha fundación de la empresa</Form.Label>
-                    <Form.Control 
-                      type='date' 
-                      size="lg"
-                      onChange={(e) => setFechaFundacion(e.target.value)}
+                    <br />
+                    <DatePicker
+                      selected={
+                        fechaFundacion 
+                          ? new Date(fechaFundacion)
+                          : null
+                      }
+                      required
+                      onChange={handleDateCreateChange}
+                      dateFormat="dd/MM/yyyy"
+                      className="form-control"
+                      placeholderText="dd/mm/yyyy"
+                      customInput={
+                        <Form.Control 
+                          type="text"
+                          required
+                          value={fechaFundacion}
+                          onChange={handleDateCreateChange}
+                        />
+                      }
                     />
                   </Form.Group>
 
@@ -178,7 +209,7 @@ export const NewCompany = () => {
                   </Form.Group>
 
                   <Button size='lg' className="mb-2 w-100" type='submit'>
-                                        Crear Empresa
+                    Crear Empresa
                   </Button>
                 </Card.Body>
               </Card>

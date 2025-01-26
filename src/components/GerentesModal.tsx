@@ -3,7 +3,7 @@ import { Button, Col, Modal, Row } from "react-bootstrap";
 import { GerenteProps } from "../interfaces/gerenteInterface";
 import axios from "axios";
 import { DepartmentsProps } from "../interfaces/departmentInterface";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { useCompanyStore } from "../store/companyStore";
 
 interface GerentesModalProps {

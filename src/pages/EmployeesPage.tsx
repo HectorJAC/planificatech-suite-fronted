@@ -3,16 +3,17 @@ import { Layout } from "../layout/Layout";
 import { useCallback, useEffect, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { CustomButton } from "../components/CustomButton";
-import { formatterDate } from "../helpers/formatters";
+import { formatterDate } from "../utils/formatters";
 import { Spinner } from "../components/Spinner";
-import { EditIcon, ViewIcon } from "../helpers/iconButtons";
+import { EditIcon, ViewIcon } from "../utils/iconButtons";
 import { getEmployees } from "../api/empleados/getAllEmployee";
 import { EmployeesProps } from "../interfaces/employeeInterface";
 import { useNavigate } from "react-router-dom";
 import { EmployeesModal } from "../components/EmployeesModal";
 import { planificaTechApi } from "../api/baseApi";
-import { handleDataNull } from "../helpers/handleDataNull";
+import { handleDataNull } from "../utils/handleDataNull";
 import { useEmployeesStore } from "../store/employeesStore";
+import { useCompanyStore } from "../store/companyStore";
 
 export const EmployeesPage = () => {
   const navigate = useNavigate();
@@ -24,11 +25,12 @@ export const EmployeesPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
 
+  const { company } = useCompanyStore();
   const { onAddEmployee } = useEmployeesStore();
 
   const allEmployee = useCallback((pageNumber = 1) => {
     setIsLoading(true);
-    getEmployees(pageNumber, 7)
+    getEmployees(pageNumber, 7, company.id_empresa!)
       .then((response) => {
         setEmployees(response);
         setCurrentPage(pageNumber);
@@ -39,7 +41,7 @@ export const EmployeesPage = () => {
         console.log(error);
         setIsLoading(false);
       });
-  }, []);
+  }, [company.id_empresa]);
 
   useEffect(() => {
     allEmployee(1);

@@ -14,7 +14,7 @@ import { Background } from '../components/Background';
 import { CustomAsterisk } from '../components/CustomAsterisk';
 import "react-toastify/dist/ReactToastify.css";
 import { planificaTechApi } from '../api/baseApi';
-import { getIdDirectorGeneral } from '../helpers/getLocalStorageData';
+import { getIdDirectorGeneral } from '../utils/getLocalStorageData';
 import { useCompanyStore } from '../store/companyStore';
 
 export const Login = () => {
@@ -62,7 +62,8 @@ export const Login = () => {
                     onSetCompany({ ...response.data });
                   })
                   .catch((error) => {
-                    toast.info(`${error.response.data.message}`);
+                    toast.info(`${error.response.data.message}. 
+                      Se le llevará a la página de creación de empresas`);
                     setTimeout(() => {
                       navigate('/new_company');
                     }, 2000);
